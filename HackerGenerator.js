@@ -151,7 +151,7 @@ function GenerateOutput() {
             input[i]="GetAddress ipv6";
             output[i]="";
             //Add one to three IPv6 addresses
-            for(var x=0;x<Math.floor(Math.random()*3)+1;x++) output[i]+="    "+GenerateIPv6();+"<br>";
+            for(var x=0;x<Math.floor(Math.random()*3)+1;x++) output[i]+="    "+GenerateIPv6()+"<br>";
             output[i]+=address;
          }
         if(a>3&&a<7) {//get address ipv4
