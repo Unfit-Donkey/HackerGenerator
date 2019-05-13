@@ -71,20 +71,14 @@ function HexToBinary(hex) {
 function GenerateIPv4() {
     var out="";
     for(var i=0;i<4;i++) {
-        if(i!=0) out+=".";
-        out+=Math.floor(Math.random()*256).toString();
+        var o="000"+Math.floor(Math.random()*256).toString();
+        out+=(i!=0?".":"")+o.substr(o.length-3,3);
     }
     return out;
  }
 function GenerateIPv6() {
     var out="";
-    for(var i=0;i<8;i++) {
-        if(i!=0) out+=":";
-        out+=strings[Math.floor(Math.random()*16)];
-        out+=strings[Math.floor(Math.random()*16)];
-        out+=strings[Math.floor(Math.random()*16)];
-        out+=strings[Math.floor(Math.random()*16)];
-    }
+    for(var i=0;i<32;i++) out+=(i%4==0&&i!=0?":":"")+strings[Math.floor(Math.random()*16)];
     return out;
  }
 function GenerateLocalIPv4() {
