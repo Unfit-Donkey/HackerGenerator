@@ -5,3 +5,9 @@ HackerGenerator is a generation function written in JavaScript that prints hacki
 Hacker Generator is available at https://unfit-donkey.github.io/HackerGenerator
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for guides on how you can help.
+
+HackerGenerator is under the MIT license
+
+##Installation
+To test your changes, open the HTML file in your browser.
+
