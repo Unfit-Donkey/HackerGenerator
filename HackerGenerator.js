@@ -142,7 +142,7 @@ function GeneratePassword() {
     }
     return out;
  }
-function printf(str) {
+function print(str) {
     document.getElementById("console").innerHTML+=str;
 }
 var output=[];
@@ -159,8 +159,7 @@ function GenerateFilePath() {
     return filePath[Math.floor(Math.random()*filePath.length)]+fileNames[Math.floor(Math.random()*fileNames.length)]+[".exe",".exe",".exe",".exe",".exe",".dll",".jar",".app",".js",".rar",".xml",".bat",".bat",".bin",".bin",".py",".cpp",".php",".sh",".sh",".sys",".sys",".txt"][Math.floor(Math.random()*23)];
 }
 function GenerateOutput() {
-    printf("Terminate Cmd with Ctrl+C<br><br>");
-    printf("C:\\Users\\Hacker102> ");
+    print("C:\\Users\\Hacker102> ");
     var i=0,a=0;
     var SHA=0;
     var address="C:\\Users\\Hacker102> ";
@@ -248,11 +247,11 @@ function runline(i) {
     }
     //Output
     var OutNum=i;
-    setTimeout(function() {printf("<br>"+output[OutNum]);},CurrentDelay+100);
+    setTimeout(function() {print("<br>"+output[OutNum]);},CurrentDelay+100);
     if(input[i]=="HIDE") CurrentDelay+=2000;
     //Run next line
     setTimeout(function() {runline(i+1);},CurrentDelay+300);
 }
 function printchar(i,x) {
-    printf(input[i][x]);
+    print(input[i][x]);
 }
