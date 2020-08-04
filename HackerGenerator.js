@@ -1,13 +1,24 @@
 var fileNames = [
-    "/scam.exe",
-    "/botnet.exe",
-    "/sendemail.exe",
-    "/emailRetrieval.exe",
-    "/a7d12.exe",
-    "/afhh1928.exe",
-    "/intercept.exe",
-    "/RewireNetwork.exe",
-    "/Email-Attachment-File.exe",
+    "/scam",
+    "/botnet",
+    "/sendemail",
+    "/emailRetrieval",
+    "/a7d12",
+    "/afhh1928",
+    "/intercept",
+    "/RewireNetwork",
+    "/Email-Attachment-File",
+    "/file",
+    "/keylog",
+    "/cookieretrieval",
+    "/privatenetwork",
+    "/hud",
+    "/newVPN",
+    "/fileshare",
+    "/hotspot",
+    "/networkadapter",
+    "/wifibreach",
+    "/proxy",
 ];
 var filePath = [
     "C:/Users/Hacker102/Documents",
@@ -16,9 +27,15 @@ var filePath = [
     "C:/Program Files/HackSoft",
     "C:/Users/Hacker102/Music/NotHacking",
     "C:/Users/Hacker102/Pictures/Nothing/In/This/Folder",
+    "C:/Users/NormalPerson/Downloads",
+    "C:/Program Files/Java",
+    "C:/Program Files/Internet Explorer",
+    "C:/Windows/Shell",
+    "C:/Windows/Temp",
+    "C:/Windows/System",
 ];
-var webpages = ["google.com","facebook.com","youtube.com","yahoo.com","apple.com","amazon.com","amazon.com","twitter.com","live.com","instagram.com","reddit.com","netflix.com","linkedin.com","twitch.tv","microsoft.com","ebay.com","google.co.uk","quora.com","bing.com"];
-var SHALengths = [160,160,224,256,512,384];
+var webpages = ["google.com","facebook.com","youtube.com","yahoo.com","apple.com","amazon.com","amazon.com","twitter.com","live.com","instagram.com","reddit.com","netflix.com","linkedin.com","twitch.tv","microsoft.com","ebay.com","google.co.uk","quora.com","bing.com",""];
+var SHALengths = [160,160,224,256];
 var strings = ["0","1","2","3","4","5","6","7","8","9","A","B","C","D","E","F"];
 var binarys = ["0000","0001","0010","0011","0100","0101","0110","0111","1000","1001","1010","1011","1100","1101","1110","1111"];
 var passwords = [
@@ -31,7 +48,11 @@ var passwords = [
     "admin",
     "!@#$%^&*",
     "google",
-    "1q2w3e4r5t"
+    "1q2w3e4r5t",
+    "mnbvcxz",
+    "facebook",
+    "bing",
+    "yahoo",
 ];
 var passnumbers = [
     "1234",
@@ -44,6 +65,11 @@ var passnumbers = [
     "111",
     "000",
     "999",
+    "420",
+    "69",
+    "1",
+    "2",
+    "0",
 ];
 /**
  * Generates hexadecimal string with input length
@@ -129,6 +155,9 @@ onload=function() {
     GenerateOutput();
     runline(0);
 }
+function GenerateFilePath() {
+    return filePath[Math.floor(Math.random()*filePath.length)]+fileNames[Math.floor(Math.random()*fileNames.length)]+[".exe",".exe",".exe",".exe",".exe",".dll",".jar",".app",".js",".rar",".xml",".bat",".bat",".bin",".bin",".py",".cpp",".php",".sh",".sh",".sys",".sys",".txt"][Math.floor(Math.random()*23)];
+}
 function GenerateOutput() {
     printf("Terminate Cmd with Ctrl+C<br><br>");
     printf("C:\\Users\\Hacker102> ");
@@ -165,18 +194,19 @@ function GenerateOutput() {
             else output[i]="Firewall Blocked";
             output[i]+="<br>C:\\Users\\Hacker102> ";
          }
-        if(a>21&&a<31) {//run program
-            input[i]="runProgram "+filePath[Math.floor(Math.random()*filePath.length)]+fileNames[Math.floor(Math.random()*fileNames.length)];
-            output[i]=address;
+            input[i]=GenerateFilePath();
+            if(Math.random()>0.8) {
+                if(Math.random()>0.3) output[i]="<span style=\"color:#ff0000\">Error on line "+Math.floor((1/Math.random())*100-100)+": "+["unknown error","I/O error","variable '"+["hello","object","item","network1","qwerty","time","var"][Math.floor(Math.random()*7)]+"' does not exist","function '"+["crackSHA","networkList","PHP","PM","TypeFind","Generate3"][Math.floor(Math.random()*6)]+"' does not exist","memory overflow","stack overflow","network disconnected","header file missing","cannot divide by zero","missing semicolon",""][Math.floor(Math.random()*10)]+"</span><br>"+address;
+                else output[i]="<span style=\"color:#ff0000\">Error: file does not exist</span><br>"+address;
          }
+            else output[i]="Program run successfully<br>"+address; 
         if(a>30&&a<38) {//crack password
             SHA=Math.floor(Math.random()*SHALengths.length);
             input[i]="crack SHA"+SHALengths[SHA].toString()+" ";
             input[i]+=GenerateHexa(SHALengths[SHA]/4);
             output[i]="Password is: "+GeneratePassword()+"<br>C:\\Users\\Hacker102> ";
          }
-        if(a>37&&a<40) {//hostFile
-            input[i]="hostFile 127.0.0.1 "+filePath[Math.floor(Math.random()*filePath.length)]+fileNames[Math.floor(Math.random()*fileNames.length)];
+            input[i]="hostFile "+GenerateLocalIPv4()+" "+GenerateFilePath();
             output[i]=address;
          }
         if(a>39&&a<47) {//convertToBinary
