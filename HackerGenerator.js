@@ -189,8 +189,8 @@ function GenerateOutput() {
          }
         if(a>12&&a<22) {//intercept (ip)
             input[i]="intercept "+GenerateIPv4();
-            if(Math.random>0.5) output[i]="Intercepted Data: "+GenerateHexa(Math.floor(Math.random()*90)+15);
-            else output[i]="Firewall Blocked";
+            if(Math.random>0.7) output[i]="Intercepted Data: "+GenerateHexa(Math.floor(Math.random()*90)+15);
+            else output[i]="<span style=\"color:#ff0000\">Firewall Blocked</span>                        ";
             output[i]+="<br>C:\\Users\\Hacker102> ";
          }
             input[i]=GenerateFilePath();
@@ -215,7 +215,7 @@ function GenerateOutput() {
          }
         if(a>46&&a<55) {//access (ip)
             input[i]="access "+GenerateIPv6();
-            if(Math.random()<0.6666) output[i]="ACCESS DENIED<br>";
+            if(Math.random()<0.6666) output[i]="<span style=\"color:#ff0000\">ACCESS DENIED<br></span>                                 ";
             else output[i]="ACCESS GRANTED<br>";
             output[i]+=address;
         }
