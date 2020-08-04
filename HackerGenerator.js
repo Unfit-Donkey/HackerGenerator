@@ -167,7 +167,7 @@ function GenerateOutput() {
         a=Math.floor(Math.random()*55);
         if(a==0) {//HIDE
             input[i]="HIDE";
-            output[i]="<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>Microsoft Windows [Version 10.0.17763.379]<br>(c) 2018 Microsoft Corporation. All rights reserved.<br><br>C:\\Users\\NormalPerson> color A<br>C:\\Users\\Hacker102> ";
+            output[i]="<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>Microsoft Windows [Version 10.0.17763.379]<br>(c) 2018 Microsoft Corporation. All rights reserved.<br><br>C:\\Users\\NormalPerson> color A<br>C:\\Users\\Hacker102> ";
          }
         if(a>0&&a<4) {//get address ipv6
             input[i]="GetAddress ipv6";
@@ -183,32 +183,35 @@ function GenerateOutput() {
             for(var x=0;x<Math.floor(Math.random()*3)+1;x++) output[i]+="    "+GenerateIPv4()+"<br>";
             output[i]+=address;
          }
-        if(a>6&&a<13) {//sendData
+        if(a>6&&a<10) {//sendData
             input[i]="sendData "+GenerateHexa(Math.floor(Math.random()*50)+10);
             output[i]=address;
          }
-        if(a>12&&a<22) {//intercept (ip)
+        if(a>9&&a<16) {//intercept (ip)
             input[i]="intercept "+GenerateIPv4();
             if(Math.random>0.7) output[i]="Intercepted Data: "+GenerateHexa(Math.floor(Math.random()*90)+15);
             else output[i]="<span style=\"color:#ff0000\">Firewall Blocked</span>                        ";
             output[i]+="<br>C:\\Users\\Hacker102> ";
          }
+        if(a>15&&a<31) {//run program
             input[i]=GenerateFilePath();
             if(Math.random()>0.8) {
                 if(Math.random()>0.3) output[i]="<span style=\"color:#ff0000\">Error on line "+Math.floor((1/Math.random())*100-100)+": "+["unknown error","I/O error","variable '"+["hello","object","item","network1","qwerty","time","var"][Math.floor(Math.random()*7)]+"' does not exist","function '"+["crackSHA","networkList","PHP","PM","TypeFind","Generate3"][Math.floor(Math.random()*6)]+"' does not exist","memory overflow","stack overflow","network disconnected","header file missing","cannot divide by zero","missing semicolon",""][Math.floor(Math.random()*10)]+"</span><br>"+address;
                 else output[i]="<span style=\"color:#ff0000\">Error: file does not exist</span><br>"+address;
+            }
+            else output[i]="Program run successfully<br>"+address;
          }
-            else output[i]="Program run successfully<br>"+address; 
         if(a>30&&a<38) {//crack password
             SHA=Math.floor(Math.random()*SHALengths.length);
-            input[i]="crack SHA"+SHALengths[SHA].toString()+" ";
+            input[i]="crackPasword SHA"+SHALengths[SHA].toString()+" ";
             input[i]+=GenerateHexa(SHALengths[SHA]/4);
             output[i]="Password is: "+GeneratePassword()+"<br>C:\\Users\\Hacker102> ";
          }
+        if(a>37&&a<45) {//hostFile
             input[i]="hostFile "+GenerateLocalIPv4()+" "+GenerateFilePath();
             output[i]=address;
          }
-        if(a>39&&a<47) {//convertToBinary
+        if(a>44&&a<47) {//convertToBinary
             var hex=GenerateHexa(10);
             input[i]="convertToBinary "+hex;
             output[i]="Binary: "+HexToBinary(hex)+"<br>C:\\Users\\Hacker102> ";
