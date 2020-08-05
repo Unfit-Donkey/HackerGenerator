@@ -1,6 +1,7 @@
 class Line {
     /**
      * Returns a randomly generated line
+     * @constructor
      * @return {Line} New line
      */
     constructor() {
@@ -91,7 +92,7 @@ class Line {
     }
 }
 //#region Names
-var fileNames = [
+const fileNames = [
     "/scam",
     "/botnet",
     "/sendemail",
@@ -113,7 +114,7 @@ var fileNames = [
     "/wifibreach",
     "/proxy",
 ];
-var filePaths = [
+const filePaths = [
     "C:/Users/Hacker102/Documents",
     "C:/Users/Hacker102/Downloads",
     "C:/Users/Hacker102/Music",
@@ -127,9 +128,9 @@ var filePaths = [
     "C:/Windows/Temp",
     "C:/Windows/System",
 ];
-var fileExtensions = [".exe",".exe",".exe",".exe",".exe",".dll",".jar",".app",".js",".rar",".xml",".bat",".bat",".bin",".bin",".py",".cpp",".php",".sh",".sh",".sys",".sys",".txt"];
-var webpages = ["google.com","facebook.com","youtube.com","yahoo.com","apple.com","amazon.com","amazon.com","twitter.com","live.com","instagram.com","reddit.com","netflix.com","linkedin.com","twitch.tv","microsoft.com","ebay.com","google.co.uk","quora.com","bing.com",""];
-var passwords = [
+const fileExtensions = [".exe",".exe",".exe",".exe",".exe",".dll",".jar",".app",".js",".rar",".xml",".bat",".bat",".bin",".bin",".py",".cpp",".php",".sh",".sh",".sys",".sys",".txt"];
+const webpages = ["google.com","facebook.com","youtube.com","yahoo.com","apple.com","amazon.com","amazon.com","twitter.com","live.com","instagram.com","reddit.com","netflix.com","linkedin.com","twitch.tv","microsoft.com","ebay.com","google.co.uk","quora.com","bing.com"];
+const passwords = [
     "password",
     "password1",
     "qwertyuiop",
@@ -145,7 +146,7 @@ var passwords = [
     "bing",
     "yahoo",
 ];
-var passnumbers = [
+const passnumbers = [
     "1234",
     "109",
     "12345",
@@ -164,9 +165,9 @@ var passnumbers = [
 ];
 //#endregion
 //#region Constants
-var SHALengths = [160,160,224,256];
-var hexCharacters = ["0","1","2","3","4","5","6","7","8","9","A","B","C","D","E","F"];
-var binarys = ["0000","0001","0010","0011","0100","0101","0110","0111","1000","1001","1010","1011","1100","1101","1110","1111"];
+const SHALengths = [160,160,224,256];
+const hexCharacters = ["0","1","2","3","4","5","6","7","8","9","A","B","C","D","E","F"];
+const binarys = ["0000","0001","0010","0011","0100","0101","0110","0111","1000","1001","1010","1011","1100","1101","1110","1111"];
 //#endregion
 //#region Generation Functions
 /**
@@ -194,10 +195,10 @@ function HexToBinary(hex) {
     }
     return out;
 }
- /**
-  * Returns a string that represents an IPv4 address
-  * @return {string} IP address
-  */
+/**
+ * Returns a string that represents an IPv4 address
+ * @return {string} IP address
+ */
 function GenerateIPv4() {
     let out="";
     for(let i=0;i<4;i++) {
@@ -206,19 +207,19 @@ function GenerateIPv4() {
     }
     return out;
 }
- /**
-  * Returns a string that represents an IPv6 address
-  * @return {string} IP address
-  */
+/**
+ * Returns a string that represents an IPv6 address
+ * @return {string} IP address
+ */
 function GenerateIPv6() {
     let out="";
     for(let i=0;i<32;i++) out+=(i%4==0&&i!=0?":":"")+hexCharacters[Math.floor(Math.random()*16)];
     return out;
 }
- /**
-  * Returns a string that represents a local IPv4 in the format 10.0.0.x
-  * @return {string} IP address
-  */
+/**
+ * Returns a string that represents a local IPv4 in the format 10.0.0.x
+ * @return {string} IP address
+ */
 function GenerateLocalIPv4() {
     return "10.0.0."+Math.floor(Math.random()*253+2).toString();
 }
@@ -266,7 +267,7 @@ function GenerateFilePath() {
     return filePaths[Math.floor(Math.random()*filePaths.length)]+fileNames[Math.floor(Math.random()*fileNames.length)]+fileExtensions[Math.floor(Math.random()*fileExtensions.length)];
 }
 //#endregion
-let address="C:\\Users\\Hacker102> ";
+const address="C:\\Users\\Hacker102> ";
 onload=function() {
     print(address);
     new Line().Display();
