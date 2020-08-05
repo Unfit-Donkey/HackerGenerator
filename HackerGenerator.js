@@ -7,6 +7,7 @@ class Line {
      */
     constructor() {
         this.output="";
+        this.input="";
         //Generate input and output
         let a=RandomInt(0,55);
         if(a==0) {//HIDE
@@ -96,6 +97,76 @@ class Line {
         globalTimeout.push(setTimeout(line.Display.bind(line),currentDelay+300));
     }
 }
+//#region Random Numbers
+//This uses the RC4 method (https://en.wikipedia.org/wiki/RC4), which is good enough for this use case.
+var randomState=[];
+var randomIndex=0;
+var randomIndex2=0;
+function stringToSeed(seed) {
+    var out=[];
+    for(let i=0;i<seed.length;i++) out[i]=seed.charCodeAt(i);
+    return out;
+}
+/**
+ * Seeds the random number generator and sets it to default
+ * @param {array} seed A mod 256 number array or string
+ */
+function seedRandom(seed) {
+    if(typeof seed==="string") seed=stringToSeed(seed);
+    randomIndex=randomIndex2=0;
+    let seedLength=seed.length;
+    randomState=[];
+    for(let i=0;i<256;i++) randomState[i]=i;
+    let j=0;
+    for(let i=0;i<256;i++) {
+        j=(j+randomState[i]+seed[i%seedLength])%256;
+        let temp=randomState[i];
+        randomState[i]=randomState[j];
+        randomState[j]=temp;
+    }
+}
+/**
+ * Returns the next random number in the pattern and changes the
+ * @return {number} Pseudorandom number from 0 to 255 inclusive
+ */
+function getRandomByte() {
+    randomIndex=(randomIndex+1)%256;
+    randomIndex2=(randomIndex2+randomState[randomIndex])%256;
+    let temp=randomState[randomIndex];
+    randomState[randomIndex]=randomState[randomIndex2];
+    randomState[randomIndex2]=temp;
+    return randomState[(randomState[randomIndex]+randomState[randomIndex2])%256];
+}
+var oldRandom=Math.random;
+Math.random=function() {
+    let out=getRandomByte()/256;
+    out+=getRandomByte()/65536;
+    out+=getRandomByte()/16777216;
+    out+=getRandomByte()/4294967296;
+    out+=getRandomByte()/1099511627776;
+    out+=getRandomByte()/281474976710656;
+    //Edge case
+    if(out==1) return 0.99999999999;
+    return out;
+}
+/**
+ * Generate a random integer from min to max
+ * @param {number} min Inclusive minimum
+ * @param {number} max Exclusive maximum
+ * @return {number} Random int from min to max
+ */
+function RandomInt(min,max) {
+    return Math.floor(Math.random()*(max-min)+min);
+}
+/**
+ * Returns a random element of an array
+ * @param array An array to pick the element from
+ * @return random element from the array
+ */
+function RandomMember(array) {
+    return array[Math.floor(Math.random()*array.length)];
+}
+//#endregion
 //#region Names
 const fileNames = [
     "/scam",
@@ -176,23 +247,6 @@ const binarys = ["0000","0001","0010","0011","0100","0101","0110","0111","1000",
 //#endregion
 //#region Generation Functions
 /**
- * Generate a random integer from min to max
- * @param {number} min Inclusive minimum
- * @param {number} max Exclusive maximum
- * @return {number} Random int from min to max
- */
-function RandomInt(min,max) {
-    return Math.floor(Math.random()*(max-min)+min);
-}
-/**
- * Returns a random element of an array
- * @param array An array to pick the element from
- * @return random element from the array
- */
-function RandomMember(array) {
-    return array[Math.floor(Math.random()*array.length)];
-}
-/**
  * Generates hexadecimal string with input length
  * @param {number} length Number of hexadecimal characters
  * @return {string} length number of randomly generated characters
@@ -200,7 +254,7 @@ function RandomMember(array) {
 function GenerateHexa(length) {
     let out="";
     for(let i=0;i<length;i++) {
-        out+=RandomMember(hexCharacters);
+        out+=hexCharacters[getRandomByte()%16];
     }
     return out;
 }
@@ -304,16 +358,23 @@ function GenerateFilePath() {
 //#endregion
 const address="C:\\Users\\Hacker102> ";
 onload=function() {
+    let seed=[];
+    for(let i=0;i<40;i++) seed[i]=Math.floor(oldRandom()*256);
+    console.log("seed: ",seed);
+    seedRandom(seed);
     print(address);
     new Line().Display();
 }
 /**
  * This function can be used instead of reloading the page (just calls onload again)
+ * @param {string} seed Seed to start the random number generator with
  */
-function Reset() {
+function Reset(seed) {
     for(let id of globalTimeout) clearTimeout(id);
     document.getElementById("console").innerHTML="";
-    onload();
+    print(address);
+    seedRandom(seed);
+    new Line().Display();
 }
 /**
   * Prints a string to the console
