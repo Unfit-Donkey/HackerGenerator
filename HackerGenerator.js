@@ -1,4 +1,67 @@
-var globalTimeout=[];
+var globalTimeout = [];
+class Function {
+    constructor(probability, delay, func) {
+        this.probability = probability;
+        this.delay = delay;
+        this.func = func;
+    }
+}
+var functions = [
+    //Hide
+    new Function(1, 1000, _ => {
+        return ["HIDE", "<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>Microsoft Windows [Version 10.0.17763.379]<br>(c) 2018 Microsoft Corporation. All rights reserved.<br><br>C:\\Users\\NormalPerson> color A"];
+    }),
+    //getAddress IPv6
+    new Function(3, 120, _ => {
+        let out = "";
+        let ipQuantity = RandomInt(2, 5);
+        for(let x = 0; x < ipQuantity; x++) out += (x == 0 ? "" : "<br>") + "    " + GenerateIPv6();
+        return ["GetAddress ipv6", out];
+    }),
+    //getAddress IPv4
+    new Function(3, 120, _ => {
+        let out = "";
+        //Add two to four IPv4 addresses
+        let ipQuantity = RandomInt(2, 5);
+        for(let x = 0; x < ipQuantity; x++) out += (x == 0 ? "" : "<br>") + "    " + GenerateIPv4();
+        return ["GetAddress ipv4", out];
+    }),
+    //send Data
+    new Function(3, 10, _ => ["sendData " + GenerateHexa(RandomInt(10, 60)), ""]),
+    //Intercept (ip)
+    new Function(6, 300, _ => {
+        let out;
+        if(Math.random() > 0.7) out = "Intercepted Data: " + GenerateHexa(RandomInt(90, 115));
+        else out = "<span style=\"color:#ff0000\">Firewall Blocked</span>                        ";
+        return ["intercept " + GenerateIPv4(), out];
+    }),
+    //Run program
+    new Function(15, 10, _ => {
+        return [GenerateFilePath(), Math.random() > 0.8 ? GenerateError() : "Program run successfully"];
+    }),
+    //Crack password
+    new Function(7, 60, _ => {
+        let SHA = RandomMember(SHALengths);
+        return ["crackPasword SHA" + SHA.toString() + " " + GenerateHexa(SHA / 4), "Password is: " + GeneratePassword()];
+    }),
+    //Host file
+    new Function(7, 40, _ => ["hostFile " + GenerateLocalIPv4() + " " + GenerateFilePath(), ""]),
+    //Convert to binary
+    new Function(2, 300, _ => {
+        let hex = GenerateHexa(RandomInt(10, 15));
+        return ["convertToBinary " + hex, "Binary: " + HexToBinary(hex)];
+    }),
+    //access (ip)
+    new Function(10, 40, _ => {
+        let out;
+        if(Math.random() < 0.6666) out = "<span style=\"color:#ff0000\">ACCESS DENIED</span>                                 ";
+        else out = "ACCESS GRANTED";
+        return ["access " + GenerateIPv6(), out];
+
+    })
+];
+//Generated onload
+var functionProbabilitySum=0;
 class Line {
     /**
      * Returns a randomly generated line
@@ -9,61 +72,21 @@ class Line {
         this.output="";
         this.input="";
         //Generate input and output
-        let a=RandomInt(0,55);
-        if(a==0) {//HIDE
-            this.input="HIDE";
-            this.output="<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>Microsoft Windows [Version 10.0.17763.379]<br>(c) 2018 Microsoft Corporation. All rights reserved.<br><br>C:\\Users\\NormalPerson> color A<br>";
-        }
-        if(a>0&&a<4) {//get address ipv6
-            this.input="GetAddress ipv6";
-            this.output="";
-            //Add two to four IPv6 addresses
-            let ipQuantity=RandomInt(2,5);
-            for(let x=0;x<ipQuantity;x++) this.output+="    "+GenerateIPv6()+"<br>";
-        }
-        if(a>3&&a<7) {//get address ipv4
-            this.input="GetAddress ipv4";
-            this.output="";
-            //Add two to four IPv4 addresses
-            let ipQuantity=RandomInt(2,5)
-            for(let x=0;x<ipQuantity;x++) this.output+="    "+GenerateIPv4()+"<br>";
-        }
-        if(a>6&&a<10) {//sendData
-            this.input="sendData "+GenerateHexa(RandomInt(10,60));
-        }
-        if(a>9&&a<16) {//intercept (ip)
-            this.input="intercept "+GenerateIPv4();
-            if(Math.random()>0.7) this.output="Intercepted Data: "+GenerateHexa(RandomInt(90,115));
-            else this.output="<span style=\"color:#ff0000\">Firewall Blocked</span>                        <br>";
-        }
-        if(a>15&&a<31) {//run program
-            this.input=GenerateFilePath();
-            if(Math.random()>0.8) {
-                //Generate an error
-                if(Math.random()>0.3) this.output="<span style=\"color:#ff0000\">Error on line "+Math.floor((1/Math.random())*100-100)+": "+RandomMember(["unknown error","I/O error","variable '"+RandomMember(["hello","object","item","network1","qwerty","time","var"])+"' does not exist","function '"+RandomMember(["crackSHA","networkList","PHP","PM","TypeFind","Generate3"])+"' does not exist","memory overflow","stack overflow","network disconnected","header file missing","cannot divide by zero","missing semicolon",""])+"</span><br>";
-                else this.output="<span style=\"color:#ff0000\">Error: file does not exist</span><br>";
+        let functionType = RandomInt(0, functionProbabilitySum);
+        let runningTotal = 0;
+        this.functionIndex = -1;
+        for(let i = 0; i < functions.length; i++) {
+            let prob = functions[i].probability;
+            if(functionType > runningTotal && functionType < runningTotal + prob + 1) {
+                this.functionIndex = i;
+                let result = functions[i].func();
+                this.input = result[0];
+                this.output = result[1] + ((result[1] != "") ? "<br>" : "");
+                break;
             }
-            else this.output="Program run successfully<br>";
+            runningTotal += prob;
         }
-        if(a>30&&a<38) {//crack password
-            let SHA=RandomMember(SHALengths);
-            this.input="crackPasword SHA"+SHA.toString()+" ";
-            this.input+=GenerateHexa(SHA/4);
-            this.output="Password is: "+GeneratePassword()+"<br>";
-        }
-        if(a>37&&a<45) {//hostFile
-            this.input="hostFile "+GenerateLocalIPv4()+" "+GenerateFilePath();
-        }
-        if(a>44&&a<47) {//convertToBinary
-            let hex=GenerateHexa(RandomInt(10,15));
-            this.input="convertToBinary "+hex;
-            this.output="Binary: "+HexToBinary(hex)+"<br>";
-        }
-        if(a>46&&a<55) {//access (ip)
-            this.input="access "+GenerateIPv6();
-            if(Math.random()<0.6666) this.output="<span style=\"color:#ff0000\">ACCESS DENIED<br></span>                                 ";
-            else this.output="ACCESS GRANTED<br>";
-        }
+        if(this.functionIndex == -1) throw "Error: " + functionType + " is out of the function range.";
         //Generate Timeout
         this.timeout=[];
         for(let x=0;x<this.input.length;x++) {
@@ -91,7 +114,7 @@ class Line {
         }
         //Output
         globalTimeout.push(setTimeout(print,currentDelay+100,"<br>"+this.output+address));
-        if(this.input=="HIDE") currentDelay+=2000;
+        currentDelay+=functions[this.functionIndex].delay;
         //Generate and display next line
         let line=new Line();
         globalTimeout.push(setTimeout(line.Display.bind(line),currentDelay+300));
@@ -283,7 +306,7 @@ function GenerateIPv4() {
     let out="";
     for(let i=0;i<4;i++) {
         if(i!=0) out+=".";
-        let num="000"+RandomInt(0,256).toString();
+        let num="000"+getRandomByte().toString();
         out+=num.substr(-3);
     }
     return out;
@@ -297,7 +320,7 @@ function GenerateIPv6() {
     let out="";
     for(let i=0;i<32;i++) {
         if(i%4==0&&i!=0) out+=":";
-        out+=RandomMember(hexCharacters);
+        out+=hexCharacters[getRandomByte()%16];
     }
     return out;
 }
@@ -306,7 +329,7 @@ function GenerateIPv6() {
  * @return {string} IP address
  */
 function GenerateLocalIPv4() {
-    return "10.0.0."+RandomInt(2,255).toString();
+    return "10.0.0."+getRandomByte().toString();
 }
 /**
   * Returns a randomly generated password
@@ -355,9 +378,22 @@ function GeneratePassword() {
 function GenerateFilePath() {
     return RandomMember(filePaths)+RandomMember(fileNames)+RandomMember(fileExtensions);
 }
+/**
+ * Generates an error
+ */
+function GenerateError() {
+    let out = "<span style=\"color:#ff0000\">";
+    if(Math.random() > 0.3) {
+        let line = Math.floor((1 / Math.random()) * 100 - 100);
+        out = "Error on line " + line + ": " + RandomMember(["unknown error", "I/O error", "variable '" + RandomMember(["hello", "object", "item", "network1", "qwerty", "time", "var"]) + "' does not exist", "function '" + RandomMember(["crackSHA", "networkList", "PHP", "PM", "TypeFind", "Generate3"]) + "' does not exist", "memory overflow", "stack overflow", "network disconnected", "header file missing", "cannot divide by zero", "missing semicolon", ""]) + "<br>";
+    }
+    else out = "Error: file does not exist<br>";
+    return out + "</span>";
+}
 //#endregion
 const address="C:\\Users\\Hacker102> ";
-onload=function() {
+onload = function() {
+    for(let i = 0; i < functions.length; i++) functionProbabilitySum += functions[i].probability;
     let seed=[];
     for(let i=0;i<40;i++) seed[i]=Math.floor(oldRandom()*256);
     console.log("seed: ",seed);
