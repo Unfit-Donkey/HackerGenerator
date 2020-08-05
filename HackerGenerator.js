@@ -270,7 +270,7 @@ function GenerateOutput() {
             if(input[i].charCodeAt(x)>65&&input[i].charCodeAt(x)<91&&((input[i].charCodeAt(x-1)<123&&input[i].charCodeAt(x-1)>96)||(input[i].charCodeAt(x-1)==92))) delay=75;
             //If numeral
             if(input[i].charCodeAt(x)>47&&input[i].charCodeAt(x)<57) delay=40;
-            timeouts[i][x]=del;
+            timeouts[i][x]=delay;
         }
      }
 }
