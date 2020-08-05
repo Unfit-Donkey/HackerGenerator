@@ -12,5 +12,7 @@ body {
     position:absolute;
     width:100vw;
     min-height:100vh;
+    padding:10px;
+    box-sizing:border-box;
     bottom:0px;
 }
