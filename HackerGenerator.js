@@ -1,3 +1,4 @@
+var globalTimeout=[];
 class Line {
     /**
      * Returns a randomly generated line
@@ -80,18 +81,19 @@ class Line {
         }
     }
     Display() {
+        globalTimeout=[];
         let currentDelay=0;
         //setTimeout characters
         for(let i=0;i<this.input.length;i++) {
-            setTimeout(print,currentDelay+this.timeout[i],this.input[i]);
+            globalTimeout[i]=setTimeout(print,currentDelay+this.timeout[i],this.input[i]);
             currentDelay+=this.timeout[i];
         }
         //Output
-        setTimeout(print,currentDelay+100,"<br>"+this.output+address);
+        globalTimeout.push(setTimeout(print,currentDelay+100,"<br>"+this.output+address));
         if(this.input=="HIDE") currentDelay+=2000;
         //Generate and display next line
         let line=new Line();
-        setTimeout(line.Display.bind(line),currentDelay+300);
+        globalTimeout.push(setTimeout(line.Display.bind(line),currentDelay+300));
     }
 }
 //#region Names
@@ -309,6 +311,7 @@ onload=function() {
  * This function can be used instead of reloading the page (just calls onload again)
  */
 function Reset() {
+    for(let id of globalTimeout) clearTimeout(id);
     document.getElementById("console").innerHTML="";
     onload();
 }
