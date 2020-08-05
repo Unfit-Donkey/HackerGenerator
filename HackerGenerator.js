@@ -7,7 +7,7 @@ class Line {
     constructor() {
         this.output="";
         //Generate input and output
-        let a=Math.floor(Math.random()*55);
+        let a=RandomInt(0,55);
         if(a==0) {//HIDE
             this.input="HIDE";
             this.output="<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>Microsoft Windows [Version 10.0.17763.379]<br>(c) 2018 Microsoft Corporation. All rights reserved.<br><br>C:\\Users\\NormalPerson> color A<br>";
@@ -15,42 +15,45 @@ class Line {
         if(a>0&&a<4) {//get address ipv6
             this.input="GetAddress ipv6";
             this.output="";
-            //Add one to three IPv6 addresses
-            for(let x=0;x<Math.floor(Math.random()*3)+1;x++) this.output+="    "+GenerateIPv6()+"<br>";
+            //Add two to four IPv6 addresses
+            let ipQuantity=RandomInt(2,5);
+            for(let x=0;x<ipQuantity;x++) this.output+="    "+GenerateIPv6()+"<br>";
         }
         if(a>3&&a<7) {//get address ipv4
             this.input="GetAddress ipv4";
             this.output="";
-            //Add one to three IPv4 addresses
-            for(let x=0;x<Math.floor(Math.random()*3)+1;x++) this.output+="    "+GenerateIPv4()+"<br>";
+            //Add two to four IPv4 addresses
+            let ipQuantity=RandomInt(2,5)
+            for(let x=0;x<ipQuantity;x++) this.output+="    "+GenerateIPv4()+"<br>";
         }
         if(a>6&&a<10) {//sendData
-            this.input="sendData "+GenerateHexa(Math.floor(Math.random()*50)+10);
+            this.input="sendData "+GenerateHexa(RandomInt(10,60));
         }
         if(a>9&&a<16) {//intercept (ip)
             this.input="intercept "+GenerateIPv4();
-            if(Math.random>0.7) this.output="Intercepted Data: "+GenerateHexa(Math.floor(Math.random()*90)+15);
+            if(Math.random()>0.7) this.output="Intercepted Data: "+GenerateHexa(RandomInt(90,115));
             else this.output="<span style=\"color:#ff0000\">Firewall Blocked</span>                        <br>";
         }
         if(a>15&&a<31) {//run program
             this.input=GenerateFilePath();
             if(Math.random()>0.8) {
-                if(Math.random()>0.3) this.output="<span style=\"color:#ff0000\">Error on line "+Math.floor((1/Math.random())*100-100)+": "+["unknown error","I/O error","variable '"+["hello","object","item","network1","qwerty","time","var"][Math.floor(Math.random()*7)]+"' does not exist","function '"+["crackSHA","networkList","PHP","PM","TypeFind","Generate3"][Math.floor(Math.random()*6)]+"' does not exist","memory overflow","stack overflow","network disconnected","header file missing","cannot divide by zero","missing semicolon",""][Math.floor(Math.random()*10)]+"</span><br>";
+                //Generate an error
+                if(Math.random()>0.3) this.output="<span style=\"color:#ff0000\">Error on line "+Math.floor((1/Math.random())*100-100)+": "+RandomMember(["unknown error","I/O error","variable '"+RandomMember(["hello","object","item","network1","qwerty","time","var"])+"' does not exist","function '"+RandomMember(["crackSHA","networkList","PHP","PM","TypeFind","Generate3"])+"' does not exist","memory overflow","stack overflow","network disconnected","header file missing","cannot divide by zero","missing semicolon",""])+"</span><br>";
                 else this.output="<span style=\"color:#ff0000\">Error: file does not exist</span><br>";
             }
             else this.output="Program run successfully<br>";
         }
         if(a>30&&a<38) {//crack password
-            let SHA=Math.floor(Math.random()*SHALengths.length);
-            this.input="crackPasword SHA"+SHALengths[SHA].toString()+" ";
-            this.input+=GenerateHexa(SHALengths[SHA]/4);
+            let SHA=RandomMember(SHALengths);
+            this.input="crackPasword SHA"+SHA.toString()+" ";
+            this.input+=GenerateHexa(SHA/4);
             this.output="Password is: "+GeneratePassword()+"<br>";
         }
         if(a>37&&a<45) {//hostFile
             this.input="hostFile "+GenerateLocalIPv4()+" "+GenerateFilePath();
         }
         if(a>44&&a<47) {//convertToBinary
-            let hex=GenerateHexa(10);
+            let hex=GenerateHexa(RandomInt(10,15));
             this.input="convertToBinary "+hex;
             this.output="Binary: "+HexToBinary(hex)+"<br>";
         }
@@ -77,18 +80,18 @@ class Line {
         }
     }
     Display() {
-        let CurrentDelay=0;
+        let currentDelay=0;
         //setTimeout characters
         for(let i=0;i<this.input.length;i++) {
-            setTimeout(print,CurrentDelay+this.timeout[i],this.input[i]);
-            CurrentDelay+=this.timeout[i];
+            setTimeout(print,currentDelay+this.timeout[i],this.input[i]);
+            currentDelay+=this.timeout[i];
         }
         //Output
-        setTimeout(print,CurrentDelay+100,"<br>"+this.output+address);
-        if(this.input=="HIDE") CurrentDelay+=2000;
+        setTimeout(print,currentDelay+100,"<br>"+this.output+address);
+        if(this.input=="HIDE") currentDelay+=2000;
         //Generate and display next line
         let line=new Line();
-        setTimeout(line.Display.bind(line),CurrentDelay+300);
+        setTimeout(line.Display.bind(line),currentDelay+300);
     }
 }
 //#region Names
@@ -171,27 +174,47 @@ const binarys = ["0000","0001","0010","0011","0100","0101","0110","0111","1000",
 //#endregion
 //#region Generation Functions
 /**
+ * Generate a random integer from min to max
+ * @param {number} min Inclusive minimum
+ * @param {number} max Exclusive maximum
+ * @return {number} Random int from min to max
+ */
+function RandomInt(min,max) {
+    return Math.floor(Math.random()*(max-min)+min);
+}
+/**
+ * Returns a random element of an array
+ * @param array An array to pick the element from
+ * @return random element from the array
+ */
+function RandomMember(array) {
+    return array[Math.floor(Math.random()*array.length)];
+}
+/**
  * Generates hexadecimal string with input length
  * @param {number} length Number of hexadecimal characters
  * @return {string} length number of randomly generated characters
  */
 function GenerateHexa(length) {
     let out="";
-    for(let i=0;i<length;i++) out+=hexCharacters[Math.floor(Math.random()*16)];
+    for(let i=0;i<length;i++) {
+        out+=RandomMember(hexCharacters);
+    }
     return out;
 }
 /**
  * Returns binary representation of hexadecimal
- * @param hex {string} Hexadecimal
+ * @param {string} hex Hexadecimal
  * @return {string} Binary
  */
 function HexToBinary(hex) {
     let out="";
     for(let i=0;i<hex.length;i++) {
+        let charCode=hex.charCodeAt(i);
         //If number
-        if(hex.charCodeAt(i)>47&&hex.charCodeAt(i)<58) out+=binarys[hex.charCodeAt(i)-48];
+        if(charCode>47&&charCode<58) out+=binarys[charCode-48];
         //If uppercase letter
-        else out+=binarys[hex.charCodeAt(i)-55];
+        else out+=binarys[charCode-55];
     }
     return out;
 }
@@ -200,20 +223,26 @@ function HexToBinary(hex) {
  * @return {string} IP address
  */
 function GenerateIPv4() {
+    //The IPv4 format is xxx.xxx.xxx.xxx where xxx is a number from 0 to 256
     let out="";
     for(let i=0;i<4;i++) {
-        let o="000"+Math.floor(Math.random()*256).toString();
-        out+=(i!=0?".":"")+o.substr(o.length-3,3);
+        if(i!=0) out+=".";
+        let num="000"+RandomInt(0,256).toString();
+        out+=num.substr(-3);
     }
     return out;
 }
 /**
  * Returns a string that represents an IPv6 address
- * @return {string} IP address
+ * @return {string} IPv6 address
  */
 function GenerateIPv6() {
+    //The IPv6 format is xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx where x is a random hexadecimal character
     let out="";
-    for(let i=0;i<32;i++) out+=(i%4==0&&i!=0?":":"")+hexCharacters[Math.floor(Math.random()*16)];
+    for(let i=0;i<32;i++) {
+        if(i%4==0&&i!=0) out+=":";
+        out+=RandomMember(hexCharacters);
+    }
     return out;
 }
 /**
@@ -221,41 +250,45 @@ function GenerateIPv6() {
  * @return {string} IP address
  */
 function GenerateLocalIPv4() {
-    return "10.0.0."+Math.floor(Math.random()*253+2).toString();
+    return "10.0.0."+RandomInt(2,255).toString();
 }
 /**
   * Returns a randomly generated password
   * @return {string} Password
   */
 function GeneratePassword() {
-    let out=passwords[Math.floor(Math.random()*passwords.length)]+passnumbers[Math.floor(Math.random()*passnumbers.length)];
+    let out=RandomMember(passwords)
+    out+=RandomMember(passnumbers);
     //Switch characters with similar looking characters randomly
     for(let i=0;i<out.length;i++) {
-        if(Math.floor(Math.random()*4)==0) {
+        //Swap with similar characters
+        if(RandomInt(0,4)==0) {
+            let char=out.charAt(i);
             //Switch "O" and "0"
-            if(out.charAt(i)=="o") out.substr(0,i)+"0"+out.substr(i+1);
-            else if(out.charAt(i)=="0") out.substr(0,i)+"O"+out.substr(i+1);
+            if(char=="o") out.substr(0,i)+"0"+out.substr(i+1);
+            else if(char=="0") out.substr(0,i)+"O"+out.substr(i+1);
 
             //Switch "e" and "3"
-            if(out.charAt(i)=="e") out.substr(0,i)+"3"+out.substr(i+1);
-            else if(out.charAt(i)=="3") out.substr(0,i)+"e"+out.substr(i+1);
+            if(char=="e") out.substr(0,i)+"3"+out.substr(i+1);
+            else if(char=="3") out.substr(0,i)+"e"+out.substr(i+1);
 
             //Switch "i" and "1"
-            if(out.charAt(i)=="1") out.substr(0,i)+"i"+out.substr(i+1);
-            else if(out.charAt(i)=="i") out.substr(0,i)+"1"+out.substr(i+1);
+            if(char=="1") out.substr(0,i)+"i"+out.substr(i+1);
+            else if(char=="i") out.substr(0,i)+"1"+out.substr(i+1);
 
             //Switch "a" and "@"
-            if(out.charAt(i)=="a") out.substr(0,i)+"@"+out.substr(i+1);
-            else if(out.charAt(i)=="@") out.substr(0,i)+"a"+out.substr(i+1);
+            if(char=="a") out.substr(0,i)+"@"+out.substr(i+1);
+            else if(char=="@") out.substr(0,i)+"a"+out.substr(i+1);
 
             //Switch "l" and "1"
-            if(out.charAt(i)=="l") out.substr(0,i)+"1"+out.substr(i+1);
-            else if(out.charAt(i)=="1") out.substr(0,i)+"l"+out.substr(i+1);
+            if(char=="l") out.substr(0,i)+"1"+out.substr(i+1);
+            else if(char=="1") out.substr(0,i)+"l"+out.substr(i+1);
         }
-    }
-    //Switch lowercase with uppercase randomly
-    for(i=0;i<out.length;i++) if(out.charCodeAt(i)>96&&out.charCodeAt(i)<123&&Math.floor(Math.random()*10)==0) {
-        out=out.substr(0,i)+String.fromCharCode(out.charCodeAt(i)-32)+out.substr(i+1);
+        //Switch lowercase with uppercase randomly
+        let charCode=out.charCodeAt(i);
+        if(charCode>96&&charCode<123&&RandomInt(0,10)==0) {
+            out=out.substr(0,i)+String.fromCharCode(charCode-32)+out.substr(i+1);
+        }
     }
     return out;
 }
@@ -264,7 +297,7 @@ function GeneratePassword() {
   * @return {string} File path
   */
 function GenerateFilePath() {
-    return filePaths[Math.floor(Math.random()*filePaths.length)]+fileNames[Math.floor(Math.random()*fileNames.length)]+fileExtensions[Math.floor(Math.random()*fileExtensions.length)];
+    return RandomMember(filePaths)+RandomMember(fileNames)+RandomMember(fileExtensions);
 }
 //#endregion
 const address="C:\\Users\\Hacker102> ";
@@ -272,10 +305,12 @@ onload=function() {
     print(address);
     new Line().Display();
 }
+/**
+ * This function can be used instead of reloading the page (just calls onload again)
+ */
 function Reset() {
-    document.getElementById("console").innerHTML+=str;
-    print(address);
-    new Line().Display();
+    document.getElementById("console").innerHTML="";
+    onload();
 }
 /**
   * Prints a string to the console
