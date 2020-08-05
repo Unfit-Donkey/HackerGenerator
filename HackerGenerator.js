@@ -1,3 +1,4 @@
+//#region Names
 var fileNames = [
     "/scam",
     "/botnet",
@@ -20,7 +21,7 @@ var fileNames = [
     "/wifibreach",
     "/proxy",
 ];
-var filePath = [
+var filePaths = [
     "C:/Users/Hacker102/Documents",
     "C:/Users/Hacker102/Downloads",
     "C:/Users/Hacker102/Music",
@@ -34,10 +35,8 @@ var filePath = [
     "C:/Windows/Temp",
     "C:/Windows/System",
 ];
+var fileExtensions = [".exe",".exe",".exe",".exe",".exe",".dll",".jar",".app",".js",".rar",".xml",".bat",".bat",".bin",".bin",".py",".cpp",".php",".sh",".sh",".sys",".sys",".txt"];
 var webpages = ["google.com","facebook.com","youtube.com","yahoo.com","apple.com","amazon.com","amazon.com","twitter.com","live.com","instagram.com","reddit.com","netflix.com","linkedin.com","twitch.tv","microsoft.com","ebay.com","google.co.uk","quora.com","bing.com",""];
-var SHALengths = [160,160,224,256];
-var strings = ["0","1","2","3","4","5","6","7","8","9","A","B","C","D","E","F"];
-var binarys = ["0000","0001","0010","0011","0100","0101","0110","0111","1000","1001","1010","1011","1100","1101","1110","1111"];
 var passwords = [
     "password",
     "password1",
@@ -71,49 +70,74 @@ var passnumbers = [
     "2",
     "0",
 ];
+//#endregion
+//#region Constants
+var SHALengths = [160,160,224,256];
+var hexCharacters = ["0","1","2","3","4","5","6","7","8","9","A","B","C","D","E","F"];
+var binarys = ["0000","0001","0010","0011","0100","0101","0110","0111","1000","1001","1010","1011","1100","1101","1110","1111"];
+//#endregion
+//#region Generation Functions
 /**
  * Generates hexadecimal string with input length
+ * @param {int} length Number of hexadecimal characters
+ * @return {string} length number of randomly generated characters
  */
 function GenerateHexa(length) {
-    var out="";
-    for(var i=0;i<length;i++) out+=strings[Math.floor(Math.random()*16)];
+    let out="";
+    for(let i=0;i<length;i++) out+=hexCharacters[Math.floor(Math.random()*16)];
     return out;
- }
+}
 /**
  * Returns binary representation of hexadecimal
  * @param hex {string} Hexadecimal
  * @return {string} Binary
  */
 function HexToBinary(hex) {
-    var out="";
-    for(var i=0;i<hex.length;i++) {
+    let out="";
+    for(let i=0;i<hex.length;i++) {
         //If number
         if(hex.charCodeAt(i)>47&&hex.charCodeAt(i)<58) out+=binarys[hex.charCodeAt(i)-48];
         //If uppercase letter
         else out+=binarys[hex.charCodeAt(i)-55];
     }
     return out;
- }
+}
+ /**
+  * Returns a string that represents an IPv4 address
+  * @return {string} IP address
+  */
 function GenerateIPv4() {
-    var out="";
-    for(var i=0;i<4;i++) {
-        var o="000"+Math.floor(Math.random()*256).toString();
+    let out="";
+    for(let i=0;i<4;i++) {
+        let o="000"+Math.floor(Math.random()*256).toString();
         out+=(i!=0?".":"")+o.substr(o.length-3,3);
     }
     return out;
- }
+}
+ /**
+  * Returns a string that represents an IPv6 address
+  * @return {string} IP address
+  */
 function GenerateIPv6() {
-    var out="";
-    for(var i=0;i<32;i++) out+=(i%4==0&&i!=0?":":"")+strings[Math.floor(Math.random()*16)];
+    let out="";
+    for(let i=0;i<32;i++) out+=(i%4==0&&i!=0?":":"")+hexCharacters[Math.floor(Math.random()*16)];
     return out;
- }
+}
+ /**
+  * Returns a string that represents a local IPv4 in the format 10.0.0.x
+  * @return {string} IP address
+  */
 function GenerateLocalIPv4() {
     return "10.0.0."+Math.floor(Math.random()*253+2).toString();
- }
+}
+/**
+  * Returns a randomly generated password
+  * @return {string} Password
+  */
 function GeneratePassword() {
-    var out=passwords[Math.floor(Math.random()*passwords.length)]+passnumbers[Math.floor(Math.random()*passnumbers.length)];
+    let out=passwords[Math.floor(Math.random()*passwords.length)]+passnumbers[Math.floor(Math.random()*passnumbers.length)];
     //Switch characters with similar looking characters randomly
-    for(var i=0;i<out.length;i++) {
+    for(let i=0;i<out.length;i++) {
         if(Math.floor(Math.random()*4)==0) {
             //Switch "O" and "0"
             if(out.charAt(i)=="o") out.substr(0,i)+"0"+out.substr(i+1);
@@ -141,28 +165,36 @@ function GeneratePassword() {
         out=out.substr(0,i)+String.fromCharCode(out.charCodeAt(i)-32)+out.substr(i+1);
     }
     return out;
- }
-function print(str) {
-    document.getElementById("console").innerHTML+=str;
 }
+/**
+  * Generates a file path in the form of filePath + fileName + fileExtension
+  * @return {string} File path
+  */
+function GenerateFilePath() {
+    return filePaths[Math.floor(Math.random()*filePaths.length)]+fileNames[Math.floor(Math.random()*fileNames.length)]+fileExtensions[Math.floor(Math.random()*fileExtensions.length)];
+}
+//#endregion
+//#region Generation Outputs
+//output[i] is the output for input[i]
 var output=[];
+//input[i] is the ith line form GenerateOutput
 var input=[];
+//Timeouts[i][x] for line i of input and character x is the time delay in ms after that character is printed
 var timeouts=[];
-var i1=0;
-var x1=0;
-var cdel=0;
+//#endregion
 onload=function() {
     GenerateOutput();
     runline(0);
 }
-function GenerateFilePath() {
-    return filePath[Math.floor(Math.random()*filePath.length)]+fileNames[Math.floor(Math.random()*fileNames.length)]+[".exe",".exe",".exe",".exe",".exe",".dll",".jar",".app",".js",".rar",".xml",".bat",".bat",".bin",".bin",".py",".cpp",".php",".sh",".sh",".sys",".sys",".txt"][Math.floor(Math.random()*23)];
-}
+/**
+  * Generates 100 lines of hacker-like code and starts the process to print it to the console. Returns to output[], input[], and timeouts[][].
+  * @return null
+  */
 function GenerateOutput() {
     print("C:\\Users\\Hacker102> ");
-    var i=0,a=0;
-    var SHA=0;
-    var address="C:\\Users\\Hacker102> ";
+    let i=0,a=0;
+    let SHA=0;
+    let address="C:\\Users\\Hacker102> ";
     for(i=0;i<100;i++) {
         a=Math.floor(Math.random()*55);
         if(a==0) {//HIDE
@@ -173,14 +205,14 @@ function GenerateOutput() {
             input[i]="GetAddress ipv6";
             output[i]="";
             //Add one to three IPv6 addresses
-            for(var x=0;x<Math.floor(Math.random()*3)+1;x++) output[i]+="    "+GenerateIPv6()+"<br>";
+            for(let x=0;x<Math.floor(Math.random()*3)+1;x++) output[i]+="    "+GenerateIPv6()+"<br>";
             output[i]+=address;
          }
         if(a>3&&a<7) {//get address ipv4
             input[i]="GetAddress ipv4";
             output[i]="";
             //Add one to three IPv4 addresses
-            for(var x=0;x<Math.floor(Math.random()*3)+1;x++) output[i]+="    "+GenerateIPv4()+"<br>";
+            for(let x=0;x<Math.floor(Math.random()*3)+1;x++) output[i]+="    "+GenerateIPv4()+"<br>";
             output[i]+=address;
          }
         if(a>6&&a<10) {//sendData
@@ -212,7 +244,7 @@ function GenerateOutput() {
             output[i]=address;
          }
         if(a>44&&a<47) {//convertToBinary
-            var hex=GenerateHexa(10);
+            let hex=GenerateHexa(10);
             input[i]="convertToBinary "+hex;
             output[i]="Binary: "+HexToBinary(hex)+"<br>C:\\Users\\Hacker102> ";
          }
@@ -223,38 +255,58 @@ function GenerateOutput() {
             output[i]+=address;
         }
      }
+    //Generate timeouts
     for(i=0;i<100;i++) {
         timeouts[i]=[];
-        var x=0;
+        let x=0;
         //Calculate delays between characters
         for(x=0;x<input[i].length;x++) {
-            var del=100;
+            let delay=100;
             //If space
-            if(input[i].charCodeAt(x)==32) del=10;
+            if(input[i].charCodeAt(x)==32) delay=10;
             //If uppercase or lowercase
-            if((input[i].charCodeAt(x)<123&&input[i].charCodeAt(x)>96)||(input[i].charCodeAt(x)>65&&input[i].charCodeAt(x)<91)) del=40;
+            if((input[i].charCodeAt(x)<123&&input[i].charCodeAt(x)>96)||(input[i].charCodeAt(x)>65&&input[i].charCodeAt(x)<91)) delay=40;
             //If lowercase and previous character is uppercase
-            if(input[i].charCodeAt(x)>65&&input[i].charCodeAt(x)<91&&((input[i].charCodeAt(x-1)<123&&input[i].charCodeAt(x-1)>96)||(input[i].charCodeAt(x-1)==92))) del=75;
+            if(input[i].charCodeAt(x)>65&&input[i].charCodeAt(x)<91&&((input[i].charCodeAt(x-1)<123&&input[i].charCodeAt(x-1)>96)||(input[i].charCodeAt(x-1)==92))) delay=75;
             //If numeral
-            if(input[i].charCodeAt(x)>47&&input[i].charCodeAt(x)<57) del=40;
+            if(input[i].charCodeAt(x)>47&&input[i].charCodeAt(x)<57) delay=40;
             timeouts[i][x]=del;
         }
      }
- }
+}
+//#region Display Functions
+/**
+  * Prints a line to the console and prepares to print the next line. This is a recursive function.
+  * @param {int} i Index of the line to print
+  */
 function runline(i) {
     CurrentDelay=0;
     //setTimeout characters
-    for(var j=0;j<input[i].length;j++) {
+    for(let j=0;j<input[i].length;j++) {
         setTimeout(printchar,CurrentDelay+timeouts[i][j],i,j);
         CurrentDelay+=timeouts[i][j];
     }
     //Output
-    var OutNum=i;
+    let OutNum=i;
     setTimeout(function() {print("<br>"+output[OutNum]);},CurrentDelay+100);
     if(input[i]=="HIDE") CurrentDelay+=2000;
     //Run next line
     setTimeout(function() {runline(i+1);},CurrentDelay+300);
 }
+/**
+  * Prints a string to the console
+  * @param {string} str String to print
+  * @return null
+  */
+function print(str) {
+    document.getElementById("console").innerHTML+=str;
+}
+/**
+  * Prints a character to the console.
+  * @param {int} i line index
+  * @param {int} x character index in the line
+  */
 function printchar(i,x) {
     print(input[i][x]);
 }
+//#endregion
