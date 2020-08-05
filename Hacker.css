@@ -1,0 +1,16 @@
+body {
+    background:#000000;
+    color:#00FF00;
+    font-family:consolas, courier, monospace;
+    overflow:hidden;
+    margin:0px;
+    width:100vw;
+    height:100vh;
+}
+#console {
+    word-wrap:break-word;
+    position:absolute;
+    width:100vw;
+    min-height:100vh;
+    bottom:0px;
+}
