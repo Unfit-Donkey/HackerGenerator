@@ -1,3 +1,94 @@
+class Line {
+    /**
+     * Returns a randomly generated line
+     * @return {Line} New line
+     */
+    constructor() {
+        //Generate input and output
+        let a=Math.floor(Math.random()*55);
+        if(a==0) {//HIDE
+            this.input="HIDE";
+            this.output="<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>Microsoft Windows [Version 10.0.17763.379]<br>(c) 2018 Microsoft Corporation. All rights reserved.<br><br>C:\\Users\\NormalPerson> color A<br>";
+        }
+        if(a>0&&a<4) {//get address ipv6
+            this.input="GetAddress ipv6";
+            this.output="";
+            //Add one to three IPv6 addresses
+            for(let x=0;x<Math.floor(Math.random()*3)+1;x++) this.output+="    "+GenerateIPv6()+"<br>";
+        }
+        if(a>3&&a<7) {//get address ipv4
+            this.input="GetAddress ipv4";
+            this.output="";
+            //Add one to three IPv4 addresses
+            for(let x=0;x<Math.floor(Math.random()*3)+1;x++) this.output+="    "+GenerateIPv4()+"<br>";
+        }
+        if(a>6&&a<10) {//sendData
+            this.input="sendData "+GenerateHexa(Math.floor(Math.random()*50)+10);
+        }
+        if(a>9&&a<16) {//intercept (ip)
+            this.input="intercept "+GenerateIPv4();
+            if(Math.random>0.7) this.output="Intercepted Data: "+GenerateHexa(Math.floor(Math.random()*90)+15);
+            else this.output="<span style=\"color:#ff0000\">Firewall Blocked</span>                        <br>";
+        }
+        if(a>15&&a<31) {//run program
+            this.input=GenerateFilePath();
+            if(Math.random()>0.8) {
+                if(Math.random()>0.3) this.output="<span style=\"color:#ff0000\">Error on line "+Math.floor((1/Math.random())*100-100)+": "+["unknown error","I/O error","variable '"+["hello","object","item","network1","qwerty","time","var"][Math.floor(Math.random()*7)]+"' does not exist","function '"+["crackSHA","networkList","PHP","PM","TypeFind","Generate3"][Math.floor(Math.random()*6)]+"' does not exist","memory overflow","stack overflow","network disconnected","header file missing","cannot divide by zero","missing semicolon",""][Math.floor(Math.random()*10)]+"</span><br>";
+                else this.output="<span style=\"color:#ff0000\">Error: file does not exist</span><br>";
+            }
+            else this.output="Program run successfully<br>";
+        }
+        if(a>30&&a<38) {//crack password
+            let SHA=Math.floor(Math.random()*SHALengths.length);
+            this.input="crackPasword SHA"+SHALengths[SHA].toString()+" ";
+            this.input+=GenerateHexa(SHALengths[SHA]/4);
+            this.output="Password is: "+GeneratePassword()+"<br>";
+        }
+        if(a>37&&a<45) {//hostFile
+            this.input="hostFile "+GenerateLocalIPv4()+" "+GenerateFilePath();
+        }
+        if(a>44&&a<47) {//convertToBinary
+            let hex=GenerateHexa(10);
+            this.input="convertToBinary "+hex;
+            this.output="Binary: "+HexToBinary(hex)+"<br>";
+        }
+        if(a>46&&a<55) {//access (ip)
+            this.input="access "+GenerateIPv6();
+            if(Math.random()<0.6666) this.output="<span style=\"color:#ff0000\">ACCESS DENIED<br></span>                                 ";
+            else this.output="ACCESS GRANTED<br>";
+        }
+        //Generate Timeout
+        this.timeout=[];
+        for(let x=0;x<this.input.length;x++) {
+            let delay=100;
+            let char=this.input.charCodeAt(x);
+            let charPrev=this.input.charCodeAt(x-1);
+            //If space
+            if(char==32) delay=10;
+            //If uppercase or lowercase
+            else if((char<123&&char>96)||(char>65&&char<91)) delay=40;
+            //If lowercase and previous character is uppercase
+            else if(char>65&&char<91&&((charPrev<123&&charPrev>96)||(charPrev==92))) delay=75;
+            //If numeral
+            else if(char>47&&char<57) delay=40;
+            this.timeout[x]=delay;
+        }
+    }
+    Display() {
+        let CurrentDelay=0;
+        //setTimeout characters
+        for(let i=0;i<this.input.length;i++) {
+            setTimeout(print,CurrentDelay+this.timeout[i],this.input[i]);
+            CurrentDelay+=this.timeout[i];
+        }
+        //Output
+        setTimeout(print,CurrentDelay+100,"<br>"+this.output+address);
+        if(this.input=="HIDE") CurrentDelay+=2000;
+        //Generate and display next line
+        let line=new Line();
+        setTimeout(line.Display.bind(line),CurrentDelay+300);
+    }
+}
 //#region Names
 var fileNames = [
     "/scam",
@@ -79,7 +170,7 @@ var binarys = ["0000","0001","0010","0011","0100","0101","0110","0111","1000","1
 //#region Generation Functions
 /**
  * Generates hexadecimal string with input length
- * @param {int} length Number of hexadecimal characters
+ * @param {number} length Number of hexadecimal characters
  * @return {string} length number of randomly generated characters
  */
 function GenerateHexa(length) {
@@ -174,124 +265,15 @@ function GenerateFilePath() {
     return filePaths[Math.floor(Math.random()*filePaths.length)]+fileNames[Math.floor(Math.random()*fileNames.length)]+fileExtensions[Math.floor(Math.random()*fileExtensions.length)];
 }
 //#endregion
-//#region Generation Outputs
-//output[i] is the output for input[i]
-var output=[];
-//input[i] is the ith line form GenerateOutput
-var input=[];
-//Timeouts[i][x] for line i of input and character x is the time delay in ms after that character is printed
-var timeouts=[];
-//#endregion
+let address="C:\\Users\\Hacker102> ";
 onload=function() {
-    GenerateOutput();
-    runline(0);
+    print(address);
+    new Line().Display();
 }
-/**
-  * Generates 100 lines of hacker-like code and starts the process to print it to the console. Returns to output[], input[], and timeouts[][].
-  * @return null
-  */
-function GenerateOutput() {
-    print("C:\\Users\\Hacker102> ");
-    let i=0,a=0;
-    let SHA=0;
-    let address="C:\\Users\\Hacker102> ";
-    for(i=0;i<100;i++) {
-        a=Math.floor(Math.random()*55);
-        if(a==0) {//HIDE
-            input[i]="HIDE";
-            output[i]="<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>Microsoft Windows [Version 10.0.17763.379]<br>(c) 2018 Microsoft Corporation. All rights reserved.<br><br>C:\\Users\\NormalPerson> color A<br>C:\\Users\\Hacker102> ";
-         }
-        if(a>0&&a<4) {//get address ipv6
-            input[i]="GetAddress ipv6";
-            output[i]="";
-            //Add one to three IPv6 addresses
-            for(let x=0;x<Math.floor(Math.random()*3)+1;x++) output[i]+="    "+GenerateIPv6()+"<br>";
-            output[i]+=address;
-         }
-        if(a>3&&a<7) {//get address ipv4
-            input[i]="GetAddress ipv4";
-            output[i]="";
-            //Add one to three IPv4 addresses
-            for(let x=0;x<Math.floor(Math.random()*3)+1;x++) output[i]+="    "+GenerateIPv4()+"<br>";
-            output[i]+=address;
-         }
-        if(a>6&&a<10) {//sendData
-            input[i]="sendData "+GenerateHexa(Math.floor(Math.random()*50)+10);
-            output[i]=address;
-         }
-        if(a>9&&a<16) {//intercept (ip)
-            input[i]="intercept "+GenerateIPv4();
-            if(Math.random>0.7) output[i]="Intercepted Data: "+GenerateHexa(Math.floor(Math.random()*90)+15);
-            else output[i]="<span style=\"color:#ff0000\">Firewall Blocked</span>                        ";
-            output[i]+="<br>C:\\Users\\Hacker102> ";
-         }
-        if(a>15&&a<31) {//run program
-            input[i]=GenerateFilePath();
-            if(Math.random()>0.8) {
-                if(Math.random()>0.3) output[i]="<span style=\"color:#ff0000\">Error on line "+Math.floor((1/Math.random())*100-100)+": "+["unknown error","I/O error","variable '"+["hello","object","item","network1","qwerty","time","var"][Math.floor(Math.random()*7)]+"' does not exist","function '"+["crackSHA","networkList","PHP","PM","TypeFind","Generate3"][Math.floor(Math.random()*6)]+"' does not exist","memory overflow","stack overflow","network disconnected","header file missing","cannot divide by zero","missing semicolon",""][Math.floor(Math.random()*10)]+"</span><br>"+address;
-                else output[i]="<span style=\"color:#ff0000\">Error: file does not exist</span><br>"+address;
-            }
-            else output[i]="Program run successfully<br>"+address;
-         }
-        if(a>30&&a<38) {//crack password
-            SHA=Math.floor(Math.random()*SHALengths.length);
-            input[i]="crackPasword SHA"+SHALengths[SHA].toString()+" ";
-            input[i]+=GenerateHexa(SHALengths[SHA]/4);
-            output[i]="Password is: "+GeneratePassword()+"<br>C:\\Users\\Hacker102> ";
-         }
-        if(a>37&&a<45) {//hostFile
-            input[i]="hostFile "+GenerateLocalIPv4()+" "+GenerateFilePath();
-            output[i]=address;
-         }
-        if(a>44&&a<47) {//convertToBinary
-            let hex=GenerateHexa(10);
-            input[i]="convertToBinary "+hex;
-            output[i]="Binary: "+HexToBinary(hex)+"<br>C:\\Users\\Hacker102> ";
-         }
-        if(a>46&&a<55) {//access (ip)
-            input[i]="access "+GenerateIPv6();
-            if(Math.random()<0.6666) output[i]="<span style=\"color:#ff0000\">ACCESS DENIED<br></span>                                 ";
-            else output[i]="ACCESS GRANTED<br>";
-            output[i]+=address;
-        }
-     }
-    //Generate timeouts
-    for(i=0;i<100;i++) {
-        timeouts[i]=[];
-        let x=0;
-        //Calculate delays between characters
-        for(x=0;x<input[i].length;x++) {
-            let delay=100;
-            //If space
-            if(input[i].charCodeAt(x)==32) delay=10;
-            //If uppercase or lowercase
-            if((input[i].charCodeAt(x)<123&&input[i].charCodeAt(x)>96)||(input[i].charCodeAt(x)>65&&input[i].charCodeAt(x)<91)) delay=40;
-            //If lowercase and previous character is uppercase
-            if(input[i].charCodeAt(x)>65&&input[i].charCodeAt(x)<91&&((input[i].charCodeAt(x-1)<123&&input[i].charCodeAt(x-1)>96)||(input[i].charCodeAt(x-1)==92))) delay=75;
-            //If numeral
-            if(input[i].charCodeAt(x)>47&&input[i].charCodeAt(x)<57) delay=40;
-            timeouts[i][x]=delay;
-        }
-     }
-}
-//#region Display Functions
-/**
-  * Prints a line to the console and prepares to print the next line. This is a recursive function.
-  * @param {int} i Index of the line to print
-  */
-function runline(i) {
-    CurrentDelay=0;
-    //setTimeout characters
-    for(let j=0;j<input[i].length;j++) {
-        setTimeout(printchar,CurrentDelay+timeouts[i][j],i,j);
-        CurrentDelay+=timeouts[i][j];
-    }
-    //Output
-    let OutNum=i;
-    setTimeout(function() {print("<br>"+output[OutNum]);},CurrentDelay+100);
-    if(input[i]=="HIDE") CurrentDelay+=2000;
-    //Run next line
-    setTimeout(function() {runline(i+1);},CurrentDelay+300);
+function Reset() {
+    document.getElementById("console").innerHTML+=str;
+    print(address);
+    new Line().Display();
 }
 /**
   * Prints a string to the console
@@ -301,12 +283,3 @@ function runline(i) {
 function print(str) {
     document.getElementById("console").innerHTML+=str;
 }
-/**
-  * Prints a character to the console.
-  * @param {int} i line index
-  * @param {int} x character index in the line
-  */
-function printchar(i,x) {
-    print(input[i][x]);
-}
-//#endregion
