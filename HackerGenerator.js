@@ -425,5 +425,8 @@ function Reset(seed) {
   * @return null
   */
 function print(str) {
-    document.getElementById("console").innerHTML+=str;
+    let html = document.getElementById("console").innerHTML;
+    html += str;
+    if(html.length > 6000) html = html.substring(html.length-5000);
+    document.getElementById("console").innerHTML = html;
 }
