@@ -124,7 +124,7 @@ class Line {
         currentDelay+=functions[this.functionIndex].delay;
         //Generate and display next line
         let line=new Line();
-        globalTimeout.push(setTimeout(line.Display.bind(line),currentDelay+300));
+        globalTimeout.push(setTimeout(line.Display.bind(line),currentDelay+500));
     }
 }
 //#region Random Numbers

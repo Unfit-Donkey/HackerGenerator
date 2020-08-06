@@ -16,3 +16,20 @@ body {
     box-sizing:border-box;
     bottom:0px;
 }
+#console::after {
+    content:"";
+    display:inline-block;
+    width:0.9ch;
+    height:0.9em;
+    box-sizing:border-box;
+    position:relative;
+    top:2px;
+    border-bottom:#ffffff solid 4px;
+    animation: blinker 1s step-start infinite;
+    opacity:1;
+}
+@keyframes blinker {
+    50% {
+        opacity:0;
+    }
+}
