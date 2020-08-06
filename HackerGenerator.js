@@ -15,7 +15,7 @@ var functions = [
     new Function(3, 120, _ => {
         let out = "";
         let ipQuantity = RandomInt(2, 5);
-        for(let x = 0; x < ipQuantity; x++) out += (x == 0 ? "" : "<br>") + "    " + GenerateIPv6();
+        for(let x = 0; x < ipQuantity; x++) out += (x == 0 ? "" : "<br>") + "|    " + GenerateIPv6();
         return ["GetAddress ipv6", out];
     }),
     //getAddress IPv4
@@ -23,7 +23,7 @@ var functions = [
         let out = "";
         //Add two to four IPv4 addresses
         let ipQuantity = RandomInt(2, 5);
-        for(let x = 0; x < ipQuantity; x++) out += (x == 0 ? "" : "<br>") + "    " + GenerateIPv4();
+        for(let x = 0; x < ipQuantity; x++) out += (x == 0 ? "" : "<br>") + "|    " + GenerateIPv4();
         return ["GetAddress ipv4", out];
     }),
     //send Data
@@ -32,7 +32,7 @@ var functions = [
     new Function(6, 300, _ => {
         let out;
         if(Math.random() > 0.7) out = "Intercepted Data: " + GenerateHexa(RandomInt(90, 115));
-        else out = "<span style=\"color:#ff0000\">Firewall Blocked</span>                        ";
+        else out = "||||<span style=\"color:#ff0000\">Firewall Blocked</span>";
         return ["intercept " + GenerateIPv4(), out];
     }),
     //Run program
@@ -42,20 +42,20 @@ var functions = [
     //Crack password
     new Function(7, 60, _ => {
         let SHA = RandomMember(SHALengths);
-        return ["crackPasword SHA" + SHA.toString() + " " + GenerateHexa(SHA / 4), "Password is: " + GeneratePassword()];
+        return ["crackPasword SHA" + SHA.toString() + " " + GenerateHexa(SHA / 4), "Password is: ||" + GeneratePassword()];
     }),
     //Host file
     new Function(7, 40, _ => ["hostFile " + GenerateLocalIPv4() + " " + GenerateFilePath(), ""]),
     //Convert to binary
     new Function(2, 300, _ => {
         let hex = GenerateHexa(RandomInt(10, 15));
-        return ["convertToBinary " + hex, "Binary: " + HexToBinary(hex)];
+        return ["convertToBinary " + hex, "Binary: |" + HexToBinary(hex)];
     }),
     //access (ip)
     new Function(10, 40, _ => {
         let out;
-        if(Math.random() < 0.6666) out = "<span style=\"color:#ff0000\">ACCESS DENIED</span>                                 ";
-        else out = "ACCESS GRANTED";
+        if(Math.random() < 0.6666) out = "|||<span style=\"color:#ff0000\">ACCESS DENIED</span>";
+        else out = "|ACCESS GRANTED";
         return ["access " + GenerateIPv6(), out];
 
     })
@@ -77,7 +77,7 @@ class Line {
         this.functionIndex = -1;
         for(let i = 0; i < functions.length; i++) {
             let prob = functions[i].probability;
-            if(functionType > runningTotal && functionType < runningTotal + prob + 1) {
+            if(functionType >= runningTotal && functionType < runningTotal + prob) {
                 this.functionIndex = i;
                 let result = functions[i].func();
                 this.input = result[0];
@@ -112,8 +112,15 @@ class Line {
             globalTimeout[i]=setTimeout(print,currentDelay+this.timeout[i],this.input[i]);
             currentDelay+=this.timeout[i];
         }
+        let outputs = this.output.split("|");
+        outputs[0] = "<br>" + outputs[0];
+        for(let i = 0; i < outputs.length; i++) {
+            globalTimeout.push(setTimeout(print, currentDelay + 50, outputs[i]));
+            currentDelay += 50;
+        }
+        globalTimeout.push(setTimeout(print, currentDelay, address));
         //Output
-        globalTimeout.push(setTimeout(print,currentDelay+100,"<br>"+this.output+address));
+
         currentDelay+=functions[this.functionIndex].delay;
         //Generate and display next line
         let line=new Line();
@@ -385,9 +392,9 @@ function GenerateError() {
     let out = "<span style=\"color:#ff0000\">";
     if(Math.random() > 0.3) {
         let line = Math.floor((1 / Math.random()) * 100 - 100);
-        out = "Error on line " + line + ": " + RandomMember(["unknown error", "I/O error", "variable '" + RandomMember(["hello", "object", "item", "network1", "qwerty", "time", "var"]) + "' does not exist", "function '" + RandomMember(["crackSHA", "networkList", "PHP", "PM", "TypeFind", "Generate3"]) + "' does not exist", "memory overflow", "stack overflow", "network disconnected", "header file missing", "cannot divide by zero", "missing semicolon", ""]) + "<br>";
+        out = "Error on line " + line + ": " + RandomMember(["unknown error", "I/O error", "variable '" + RandomMember(["hello", "object", "item", "network1", "qwerty", "time", "var"]) + "' does not exist", "function '" + RandomMember(["crackSHA", "networkList", "PHP", "PM", "TypeFind", "Generate3"]) + "' does not exist", "memory overflow", "stack overflow", "network disconnected", "header file missing", "cannot divide by zero", "missing semicolon", ""]);
     }
-    else out = "Error: file does not exist<br>";
+    else out = "Error: file does not exist";
     return out + "</span>";
 }
 //#endregion
