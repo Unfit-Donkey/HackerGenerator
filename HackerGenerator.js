@@ -304,31 +304,39 @@ function HexToBinary(hex) {
     }
     return out;
 }
+var IPv4Cache = [];
 /**
  * Returns a string that represents an IPv4 address
  * @return {string} IP address
  */
 function GenerateIPv4() {
     //The IPv4 format is xxx.xxx.xxx.xxx where xxx is a number from 0 to 256
-    let out="";
+    let out = "";
+    if(IPv4Cache.length > 5 && getRandomByte() > 128) return RandomMember(IPv4Cache);
     for(let i=0;i<4;i++) {
         if(i!=0) out+=".";
         let num="000"+getRandomByte().toString();
         out+=num.substr(-3);
     }
+    IPv4Cache.push(out);
+    if(IPv4Cache.length>10) IPv4Cache.shift();
     return out;
 }
+var IPv6Cache = [];
 /**
  * Returns a string that represents an IPv6 address
  * @return {string} IPv6 address
  */
 function GenerateIPv6() {
     //The IPv6 format is xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx where x is a random hexadecimal character
-    let out="";
+    let out = "";
+    if(IPv6Cache.length > 5 && getRandomByte() > 128) return RandomMember(IPv6Cache);
     for(let i=0;i<32;i++) {
         if(i%4==0&&i!=0) out+=":";
         out+=hexCharacters[getRandomByte()%16];
     }
+    IPv6Cache.push(out);
+    if(IPv6Cache.length>10) IPv6Cache.shift();
     return out;
 }
 /**
@@ -338,43 +346,52 @@ function GenerateIPv6() {
 function GenerateLocalIPv4() {
     return "10.0.0."+getRandomByte().toString();
 }
+var passwordCache;
 /**
   * Returns a randomly generated password
   * @return {string} Password
   */
 function GeneratePassword() {
-    let out=RandomMember(passwords)
-    out+=RandomMember(passnumbers);
-    //Switch characters with similar looking characters randomly
-    for(let i=0;i<out.length;i++) {
-        //Swap with similar characters
-        if(RandomInt(0,4)==0) {
-            let char=out.charAt(i);
-            //Switch "O" and "0"
-            if(char=="o") out.substr(0,i)+"0"+out.substr(i+1);
-            else if(char=="0") out.substr(0,i)+"O"+out.substr(i+1);
+    let out;
+    //Use the cache
+    if(passwordCache.length > 5 && getRandomByte() > 128) return RandomMember(passwordCache);
+    //Else generate a new password
+    else {
+        out+=RandomMember(passwords);
+        out+=RandomMember(passnumbers);
+        //Switch characters with similar looking characters randomly
+        for(let i=0;i<out.length;i++) {
+            //Swap with similar characters
+            if(RandomInt(0,4)==0) {
+                let char=out.charAt(i);
+                //Switch "O" and "0"
+                if(char=="o") out.substr(0,i)+"0"+out.substr(i+1);
+                else if(char=="0") out.substr(0,i)+"O"+out.substr(i+1);
 
-            //Switch "e" and "3"
-            if(char=="e") out.substr(0,i)+"3"+out.substr(i+1);
-            else if(char=="3") out.substr(0,i)+"e"+out.substr(i+1);
+                //Switch "e" and "3"
+                if(char=="e") out.substr(0,i)+"3"+out.substr(i+1);
+                else if(char=="3") out.substr(0,i)+"e"+out.substr(i+1);
 
-            //Switch "i" and "1"
-            if(char=="1") out.substr(0,i)+"i"+out.substr(i+1);
-            else if(char=="i") out.substr(0,i)+"1"+out.substr(i+1);
+                //Switch "i" and "1"
+                if(char=="1") out.substr(0,i)+"i"+out.substr(i+1);
+                else if(char=="i") out.substr(0,i)+"1"+out.substr(i+1);
 
-            //Switch "a" and "@"
-            if(char=="a") out.substr(0,i)+"@"+out.substr(i+1);
-            else if(char=="@") out.substr(0,i)+"a"+out.substr(i+1);
+                //Switch "a" and "@"
+                if(char=="a") out.substr(0,i)+"@"+out.substr(i+1);
+                else if(char=="@") out.substr(0,i)+"a"+out.substr(i+1);
 
-            //Switch "l" and "1"
-            if(char=="l") out.substr(0,i)+"1"+out.substr(i+1);
-            else if(char=="1") out.substr(0,i)+"l"+out.substr(i+1);
+                //Switch "l" and "1"
+                if(char=="l") out.substr(0,i)+"1"+out.substr(i+1);
+                else if(char=="1") out.substr(0,i)+"l"+out.substr(i+1);
+            }
+            //Switch lowercase with uppercase randomly
+            let charCode=out.charCodeAt(i);
+            if(charCode>96&&charCode<123&&RandomInt(0,10)==0) {
+                out=out.substr(0,i)+String.fromCharCode(charCode-32)+out.substr(i+1);
+            }
         }
-        //Switch lowercase with uppercase randomly
-        let charCode=out.charCodeAt(i);
-        if(charCode>96&&charCode<123&&RandomInt(0,10)==0) {
-            out=out.substr(0,i)+String.fromCharCode(charCode-32)+out.substr(i+1);
-        }
+        passwordCache.push(out);
+        if(passworCache.length > 10) passwordCache.shift();
     }
     return out;
 }
@@ -414,7 +431,10 @@ onload = function() {
  */
 function Reset(seed) {
     for(let id of globalTimeout) clearTimeout(id);
-    document.getElementById("console").innerHTML="";
+    document.getElementById("console").innerHTML = "";
+    IPv4Cache = [];
+    IPv6Cache = [];
+    passwordCache = [];
     print(address);
     seedRandom(seed);
     new Line().Display();
