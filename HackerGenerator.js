@@ -391,7 +391,7 @@ function GeneratePassword() {
             }
         }
         passwordCache.push(out);
-        if(passworCache.length > 10) passwordCache.shift();
+        if(passwordCache.length > 10) passwordCache.shift();
     }
     return out;
 }
