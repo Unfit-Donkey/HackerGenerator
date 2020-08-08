@@ -165,8 +165,15 @@ var randomState=[];
 var randomIndex=0;
 var randomIndex2=0;
 function stringToSeed(seed) {
-    var out=[];
-    for(let i=0;i<seed.length;i++) out[i]=seed.charCodeAt(i);
+    let out=[];
+    for(let i = 0; i < seed.length / 2; i++) {
+        out[i]=parseInt(seed.substring(i*2,i*2+2),16);
+    }
+    return out;
+}
+function seedToString(seed) {
+    let out = "";
+    for(let i = 0; i < seed.length; i++) out += ("00" + seed[i].toString(16)).slice(-2);
     return out;
 }
 /**
@@ -174,7 +181,8 @@ function stringToSeed(seed) {
  * @param {array} seed A mod 256 number array or string
  */
 function seedRandom(seed) {
-    if(typeof seed==="string") seed=stringToSeed(seed);
+    if(typeof seed === "string") seed = stringToSeed(seed);
+    globalSeed = seed;
     randomIndex = 0;
     randomIndex2 = 0;
     let seedLength=seed.length;
@@ -527,13 +535,12 @@ const address="C:\\Users\\Hacker102> ";
 onload = function(event, seed) {
     functionProbabilitySum = 0;
     for(let i = 0; i < functions.length; i++) functionProbabilitySum += functions[i].probability;
-    if(typeof seed!="object") {
+    if(typeof seed != "object" && typeof seed != "string") {
         seed=[];
-        for(let i=0;i<40;i++) seed[i]=Math.floor(oldRandom()*256);
+        for(let i = 0; i < 40; i++) seed[i] = Math.floor(oldRandom() * 256);
     }
-    globalSeed = seed;
-    console.log("seed: ",seed);
     seedRandom(seed);
+    console.log("seed: ",seedToString(globalSeed));
     for(let i = 0; i < 10; i++) {
         IPv4Cache[i]=GenerateIPv4();
         IPv6Cache[i]=GenerateIPv6();
