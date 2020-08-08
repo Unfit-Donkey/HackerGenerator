@@ -1,4 +1,5 @@
 var displaySpeed = 1;
+var stop = false;
 var globalTimeout = [];
 class Function {
     constructor(probability, delay, func) {
@@ -159,8 +160,10 @@ class Line {
 
         currentDelay+=functions[this.functionIndex].delay;
         //Generate and display next line
-        let line=new Line();
-        globalTimeout.push(setTimeout(line.Display.bind(line),(currentDelay+500)/displaySpeed));
+        if(!stop) {
+            let line = new Line();
+            globalTimeout.push(setTimeout(line.Display.bind(line), (currentDelay + 500) / displaySpeed));
+        }
     }
 }
 //#region Random Numbers
