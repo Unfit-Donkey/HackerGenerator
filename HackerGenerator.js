@@ -63,6 +63,30 @@ var functions = [
     new Function(15, 20, _ => {
         return ["login " + RandomMember(webpages) + " " + GenerateEmailAddress() + " " + GeneratePassword(),
         randomInaccurate() > 0.6 ? "|||<span style=\"color:#ff0000\">ACCESS DENIED</span>" : "Access Granted"];
+    }),
+    new Function(10, 10, _ => {
+        let input;
+        let ip = GenerateIPv6();
+        if(randomInaccurate() > 0.5) input = ip;
+        else input = RandomMember(webpages);
+        let out = "Pinging " + input;
+        let packets = RandomInt(3, 7);
+        if(input != ip) out += "[" + ip + "]";
+        out += " with "+packets+" packets|||||<br>";
+        let ms = [];
+        let average = 0,min=100,max=0;
+        for(let i = 0; i < packets; i++) {
+            ms[i] = RandomInt(10, 80);
+            if(ms[i] > max) max = ms[i];
+            if(ms[i] < min) min = ms[i];
+            average += ms[i] / packets;
+
+            out += "|||||Reply " + i + " took " + ms[i] + " ms<br>";
+        }
+
+        out += "||||Minimum: " + min + ", Maximum: " + max + ", Average: " + Math.floor(average*10)/10;
+
+        return ["ping "+input,out]
     })
 ];
 //Generated onload
