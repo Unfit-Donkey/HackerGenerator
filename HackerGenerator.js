@@ -1,3 +1,4 @@
+var displaySpeed = 1;
 var globalTimeout = [];
 class Function {
     constructor(probability, delay, func) {
@@ -139,22 +140,22 @@ class Line {
         let currentDelay=0;
         //setTimeout characters
         for(let i=0;i<this.input.length;i++) {
-            globalTimeout[i]=setTimeout(print,currentDelay+this.timeout[i],this.input[i]);
+            globalTimeout[i]=setTimeout(print,(currentDelay+this.timeout[i])/displaySpeed,this.input[i]);
             currentDelay+=this.timeout[i];
         }
         let outputs = this.output.split("|");
         outputs[0] = "<br>" + outputs[0];
         for(let i = 0; i < outputs.length; i++) {
-            globalTimeout.push(setTimeout(print, currentDelay + 50, outputs[i]));
+            globalTimeout.push(setTimeout(print, (currentDelay + 50)/displaySpeed, outputs[i]));
             currentDelay += 100;
         }
-        globalTimeout.push(setTimeout(print, currentDelay, address));
+        globalTimeout.push(setTimeout(print, currentDelay/displaySpeed, address));
         //Output
 
         currentDelay+=functions[this.functionIndex].delay;
         //Generate and display next line
         let line=new Line();
-        globalTimeout.push(setTimeout(line.Display.bind(line),currentDelay+500));
+        globalTimeout.push(setTimeout(line.Display.bind(line),(currentDelay+500)/displaySpeed));
     }
 }
 //#region Random Numbers
