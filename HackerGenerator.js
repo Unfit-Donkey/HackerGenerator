@@ -14,7 +14,7 @@ var functions = [
     //getAddress IPv6
     new Function(3, 120, _ => {
         let out = "";
-        let ipQuantity = RandomInt(2, 5);
+        let ipQuantity = RandomInt(2, 8);
         for(let x = 0; x < ipQuantity; x++) out += (x == 0 ? "" : "<br>") + "|    " + GenerateIPv6();
         return ["GetAddress ipv6", out];
     }),
@@ -22,7 +22,7 @@ var functions = [
     new Function(3, 120, _ => {
         let out = "";
         //Add two to four IPv4 addresses
-        let ipQuantity = RandomInt(2, 5);
+        let ipQuantity = RandomInt(2, 8);
         for(let x = 0; x < ipQuantity; x++) out += (x == 0 ? "" : "<br>") + "|    " + GenerateIPv4();
         return ["GetAddress ipv4", out];
     }),
@@ -42,7 +42,7 @@ var functions = [
     //Crack password
     new Function(7, 60, _ => {
         let SHA = RandomMember(SHALengths);
-        return ["crackPasword SHA" + SHA.toString() + " " + GenerateHexa(SHA / 4), "Password is: ||" + GeneratePassword()];
+        return ["crackPasword SHA" + SHA.toString() + " " + GenerateHexa(SHA / 4), "Password is: ||||||||||" + GeneratePassword()];
     }),
     //Host file
     new Function(7, 40, _ => ["hostFile " + GenerateLocalIPv4() + " " + GenerateFilePath(), ""]),
@@ -54,8 +54,8 @@ var functions = [
     //access (ip)
     new Function(10, 40, _ => {
         let out;
-        if(Math.random() < 0.6666) out = "|||<span style=\"color:#ff0000\">ACCESS DENIED</span>";
-        else out = "|ACCESS GRANTED";
+        if(Math.random() < 0.6666) out = "||||<span style=\"color:#ff0000\">ACCESS DENIED</span>";
+        else out = "|||ACCESS GRANTED";
         return ["access " + GenerateIPv6(), out];
 
     }),
@@ -64,6 +64,7 @@ var functions = [
         return ["login " + RandomMember(webpages) + " " + GenerateEmailAddress() + " " + GeneratePassword(),
         randomInaccurate() > 0.6 ? "|||<span style=\"color:#ff0000\">ACCESS DENIED</span>" : "Access Granted"];
     }),
+    //Ping
     new Function(10, 10, _ => {
         let input;
         let ip = GenerateIPv6();
@@ -72,7 +73,7 @@ var functions = [
         let out = "Pinging " + input;
         let packets = RandomInt(3, 7);
         if(input != ip) out += "[" + ip + "]";
-        out += " with "+packets+" packets|||||<br>";
+        out += " with "+packets+" packets|||<br>";
         let ms = [];
         let average = 0,min=100,max=0;
         for(let i = 0; i < packets; i++) {
@@ -145,7 +146,7 @@ class Line {
         outputs[0] = "<br>" + outputs[0];
         for(let i = 0; i < outputs.length; i++) {
             globalTimeout.push(setTimeout(print, currentDelay + 50, outputs[i]));
-            currentDelay += 50;
+            currentDelay += 100;
         }
         globalTimeout.push(setTimeout(print, currentDelay, address));
         //Output
