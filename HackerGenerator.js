@@ -58,6 +58,11 @@ var functions = [
         else out = "|ACCESS GRANTED";
         return ["access " + GenerateIPv6(), out];
 
+    }),
+    //login
+    new Function(15, 20, _ => {
+        return ["login " + RandomMember(webpages) + " " + GenerateEmailAddress() + " " + GeneratePassword(),
+        randomInaccurate() > 0.6 ? "|||<span style=\"color:#ff0000\">ACCESS DENIED</span>" : "Access Granted"];
     })
 ];
 //Generated onload
@@ -179,6 +184,9 @@ Math.random=function() {
     if(out==1) return 0.99999999999;
     return out;
 }
+function randomInaccurate() {
+    return getRandomByte() / 255;
+}
 /**
  * Generate a random integer from min to max
  * @param {number} min Inclusive minimum
@@ -269,6 +277,35 @@ const passnumbers = [
     "2",
     "0",
 ];
+const emailWebsites = ["gmail.com", "gmail.com", "gmail.com", "aol.com", "outlook.com", "icloud.com", "yahoo.com", "yahoo.com", "comcast.net"];
+const websiteExtensions = [".com", ".com", ".com", ".net", ".net", ".org", ".org", ".gov", ".edu", ".ca", ".us", ".co.uk"];
+//#endregion
+//#region Word Generation
+//Combinations of two vowels
+const wordDipthongs = ["ai", "au", "aw", "ea", "ee", "ei", "ew", "ia", "ie", "oa", "oi", "oo", "ou", "ow", "ua", "ui", "uo"];
+//Combinations of two consonants
+const wordDigraphs = ["br", "ch", "ck", "cr", "ct", "dg", "dr", "ff", "gh", "gr", "kn", "kr", "mn", "ng", "ph", "pn", "pr", "pt", "qu", "sh", "sh", "tr","th", "wh", "wr", "xi"];
+const wordVowels = ["a", "a", "e", "e", "e", "i", "i", "o", "o", "u"];
+//J, Q, and Z are excluded because they are rare.
+const wordConsonants = ["b", "c", "d", "d", "f", "g", "h", "h", "h", "k", "l", "l", "m", "n", "n", "n", "p", "r", "r", "r", "r", "s", "s", "s", "t", "t", "t", "t", "t", "v", "w"];
+function GenerateRandomWord(length) {
+    //30% chance to start with a vowel
+    let useVowel = randomInaccurate() < 0.3;
+    let out="";
+    for(var i = 0; i < length; i++) {
+        //30% chance to use two characters
+        if(randomInaccurate() < 0.3 && i < length - 1) {
+            let letters = RandomMember(useVowel ? wordDipthongs : wordDigraphs);
+            if(i == length - 2 && letters.charAt(1) == "r") { i--; continue; }
+            out += letters;
+            i++;
+        }
+        else out += RandomMember(useVowel ? wordVowels : wordConsonants);
+        useVowel = !useVowel;
+    }
+    return out;
+
+}
 //#endregion
 //#region Constants
 const SHALengths = [160,160,224,256];
@@ -304,7 +341,11 @@ function HexToBinary(hex) {
     }
     return out;
 }
+//Caches save the most recently used IP addresses and passwords to make the lines seem related
+var passwordCache=[];
+var IPv6Cache = [];
 var IPv4Cache = [];
+var emailCache = [];
 /**
  * Returns a string that represents an IPv4 address
  * @return {string} IP address
@@ -322,7 +363,6 @@ function GenerateIPv4() {
     if(IPv4Cache.length>10) IPv4Cache.shift();
     return out;
 }
-var IPv6Cache = [];
 /**
  * Returns a string that represents an IPv6 address
  * @return {string} IPv6 address
@@ -346,13 +386,12 @@ function GenerateIPv6() {
 function GenerateLocalIPv4() {
     return "10.0.0."+getRandomByte().toString();
 }
-var passwordCache;
 /**
   * Returns a randomly generated password
   * @return {string} Password
   */
 function GeneratePassword() {
-    let out;
+    let out="";
     //Use the cache
     if(passwordCache.length > 5 && getRandomByte() > 128) return RandomMember(passwordCache);
     //Else generate a new password
@@ -413,6 +452,33 @@ function GenerateError() {
     }
     else out = "Error: file does not exist";
     return out + "</span>";
+}
+function GenerateEmailAddress() {
+    if(emailCache.length > 5 && randomInaccurate() > 0.5) {
+        return RandomMember(emailCache);
+    }
+    else {
+        let out = "";
+        //40% chance for Initials
+        if(randomInaccurate() > 0.6) {
+            //Add a random lowercase letter 2 or 3 times
+            var times = RandomInt(2, 4);
+            let capital = randomInaccurate() > 0.5 ? 97 : 65;
+            for(var i = 0; i < times; i++) out += String.fromCharCode(RandomInt(capital, capital + 26));
+        }
+        //else random word
+        else out += GenerateRandomWord(RandomInt(3, 8));
+        //Add a number at the end in a way where higher numbers are rarer
+        if(randomInaccurate() > 0.1) out += RandomMember(["","_","-"]) + Math.floor(1 / Math.random() + 0.001);
+        //Website suffix
+        out += "@";
+        if(randomInaccurate() > 0.3) out += RandomMember(emailWebsites);
+        else out += GenerateRandomWord(RandomInt(4, 8)) + RandomMember(websiteExtensions);
+        //Return
+        emailCache.push(out);
+        if(emailCache.length > 10) emailCache.shift();
+        return out;
+    }
 }
 //#endregion
 const address="C:\\Users\\Hacker102> ";
