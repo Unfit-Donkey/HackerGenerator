@@ -142,6 +142,15 @@ class Line {
         }
     }
     Display() {
+        if(this.input.includes("undefined") || this.output.includes("undefined")) {
+            let undoCount = stirCount - lastStirCount;
+            randomUndo(undoCount);
+            let state = randomState.slice();
+            state.push(randomIndex);
+            state.push(randomIndex2);
+            console.log("undefined error! state is: ", JSON.stringify(state));
+            for(let i = 0; i < undoCount; i++) getRandomByte();
+        }
         globalTimeout=[];
         let currentDelay=0;
         //setTimeout characters
@@ -157,13 +166,19 @@ class Line {
         }
         globalTimeout.push(setTimeout(print, currentDelay/displaySpeed, address));
         //Output
-
         currentDelay+=functions[this.functionIndex].delay;
         //Generate and display next line
         if(!stop) {
+            lastStirCount = stirCount;
             let line = new Line();
             globalTimeout.push(setTimeout(line.Display.bind(line), (currentDelay + 500) / displaySpeed));
         }
+    }
+    static fromRandomState(state) {
+        randomIndex = state[256];
+        randomIndex2 = state[257];
+        randomState = state.slice(0, 256);
+        return new Line();
     }
 }
 //#region Random Numbers
@@ -171,7 +186,9 @@ class Line {
 var globalSeed;
 var randomState=[];
 var randomIndex=0;
-var randomIndex2=0;
+var randomIndex2 = 0;
+var stirCount = 0;
+var lastStirCount = 0;
 function stringToSeed(seed) {
     let out=[];
     for(let i = 0; i < seed.length / 2; i++) {
@@ -209,12 +226,22 @@ function seedRandom(seed) {
  * @return {number} Pseudorandom number from 0 to 255 inclusive
  */
 function getRandomByte() {
+    stirCount++;
     randomIndex=(randomIndex+1)%256;
     randomIndex2=(randomIndex2+randomState[randomIndex])%256;
     let temp=randomState[randomIndex];
     randomState[randomIndex]=randomState[randomIndex2];
     randomState[randomIndex2]=temp;
     return randomState[(randomState[randomIndex]+randomState[randomIndex2])%256];
+}
+function randomUndo(undoCount) {
+    for(let i = 0; i < undoCount; i++) {
+        let temp = randomState[randomIndex];
+        randomState[randomIndex] = randomState[randomIndex2];
+        randomState[randomIndex2] = temp;
+        randomIndex2=(randomIndex2-randomState[randomIndex]+256)%256;
+        randomIndex=(randomIndex+255)%256;
+    }
 }
 var oldRandom=Math.random;
 Math.random=function() {
