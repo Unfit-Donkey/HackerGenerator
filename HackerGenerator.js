@@ -148,6 +148,7 @@ class Line {
             let state = randomState.slice();
             state.push(randomIndex);
             state.push(randomIndex2);
+            state = seedToString(state);
             console.log("undefined error! state is: ", JSON.stringify(state));
             for(let i = 0; i < undoCount; i++) getRandomByte();
         }
@@ -175,9 +176,7 @@ class Line {
         }
     }
     static fromRandomState(state) {
-        randomIndex = state[256];
-        randomIndex2 = state[257];
-        randomState = state.slice(0, 256);
+        setRandomState(state);
         return new Line();
     }
 }
@@ -242,6 +241,12 @@ function randomUndo(undoCount) {
         randomIndex2=(randomIndex2-randomState[randomIndex]+256)%256;
         randomIndex=(randomIndex+255)%256;
     }
+}
+function setRandomState(state) {
+    if(typeof state == "string") state = stringToSeed(state);
+    randomIndex = state[256];
+    randomIndex2 = state[257];
+    randomState = state.slice(0, 256);
 }
 var oldRandom=Math.random;
 Math.random=function() {
@@ -435,10 +440,10 @@ var emailCache = [];
  * Returns a string that represents an IPv4 address
  * @return {string} IP address
  */
-function GenerateIPv4() {
+function GenerateIPv4(useCache=true) {
     //The IPv4 format is xxx.xxx.xxx.xxx where xxx is a number from 0 to 256
     let out = "";
-    if(getRandomByte() > 128) return RandomMember(IPv4Cache);
+    if(useCache&&getRandomByte() > 128) return RandomMember(IPv4Cache);
     for(let i=0;i<4;i++) {
         if(i!=0) out+=".";
         let num="000"+getRandomByte().toString();
@@ -452,10 +457,10 @@ function GenerateIPv4() {
  * Returns a string that represents an IPv6 address
  * @return {string} IPv6 address
  */
-function GenerateIPv6() {
+function GenerateIPv6(useCache=true) {
     //The IPv6 format is xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx where x is a random hexadecimal character
     let out = "";
-    if(getRandomByte() > 128) return RandomMember(IPv6Cache);
+    if(useCache&&getRandomByte() > 128) return RandomMember(IPv6Cache);
     for(let i=0;i<32;i++) {
         if(i%4==0&&i!=0) out+=":";
         out+=hexCharacters[getRandomByte()%16];
@@ -475,10 +480,10 @@ function GenerateLocalIPv4() {
   * Returns a randomly generated password
   * @return {string} Password
   */
-function GeneratePassword() {
+function GeneratePassword(useCache=true) {
     let out="";
     //Use the cache
-    if(getRandomByte() > 128) return RandomMember(passwordCache);
+    if(useCache&&getRandomByte() > 128) return RandomMember(passwordCache);
     //Else generate a new password
     else {
         if(randomInaccurate() > 0.3) out += RandomMember(passwords);
@@ -540,8 +545,8 @@ function GenerateError() {
     else out = "Error: file does not exist";
     return out + "</span>";
 }
-function GenerateEmailAddress() {
-    if(randomInaccurate() > 0.5) return RandomMember(emailCache);
+function GenerateEmailAddress(useCache=true) {
+    if(useCache&&randomInaccurate() > 0.5) return RandomMember(emailCache);
     else {
         let out = "";
         //40% chance for Initials
@@ -577,10 +582,10 @@ onload = function(event, seed) {
     seedRandom(seed);
     console.log("seed: ",seedToString(globalSeed));
     for(let i = 0; i < 10; i++) {
-        IPv4Cache[i]=GenerateIPv4();
-        IPv6Cache[i]=GenerateIPv6();
-        passwordCache[i] = GeneratePassword();
-        emailCache[i] = GenerateEmailAddress();
+        GenerateIPv4(false);
+        GenerateIPv6(false);
+        GeneratePassword(false);
+        GenerateEmailAddress(false);
     }
     print(address);
     new Line().Display();
