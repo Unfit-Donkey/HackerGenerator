@@ -158,6 +158,7 @@ class Line {
 }
 //#region Random Numbers
 //This uses the RC4 method (https://en.wikipedia.org/wiki/RC4), which is good enough for this use case.
+var globalSeed;
 var randomState=[];
 var randomIndex=0;
 var randomIndex2=0;
@@ -172,7 +173,8 @@ function stringToSeed(seed) {
  */
 function seedRandom(seed) {
     if(typeof seed==="string") seed=stringToSeed(seed);
-    randomIndex=randomIndex2=0;
+    randomIndex = 0;
+    randomIndex2 = 0;
     let seedLength=seed.length;
     randomState=[];
     for(let i=0;i<256;i++) randomState[i]=i;
@@ -288,20 +290,15 @@ const passwords = [
 ];
 const passnumbers = [
     "1234",
-    "109",
     "12345",
     "54321",
     "13579",
     "24680",
     "02468",
-    "111",
     "000",
     "999",
     "420",
     "69",
-    "1",
-    "2",
-    "0",
 ];
 const emailWebsites = ["gmail.com", "gmail.com", "gmail.com", "aol.com", "outlook.com", "icloud.com", "yahoo.com", "yahoo.com", "comcast.net"];
 const websiteExtensions = [".com", ".com", ".com", ".net", ".net", ".org", ".org", ".gov", ".edu", ".ca", ".us", ".co.uk"];
@@ -396,7 +393,7 @@ var emailCache = [];
 function GenerateIPv4() {
     //The IPv4 format is xxx.xxx.xxx.xxx where xxx is a number from 0 to 256
     let out = "";
-    if(IPv4Cache.length > 5 && getRandomByte() > 128) return RandomMember(IPv4Cache);
+    if(getRandomByte() > 128) return RandomMember(IPv4Cache);
     for(let i=0;i<4;i++) {
         if(i!=0) out+=".";
         let num="000"+getRandomByte().toString();
@@ -413,7 +410,7 @@ function GenerateIPv4() {
 function GenerateIPv6() {
     //The IPv6 format is xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx where x is a random hexadecimal character
     let out = "";
-    if(IPv6Cache.length > 5 && getRandomByte() > 128) return RandomMember(IPv6Cache);
+    if(getRandomByte() > 128) return RandomMember(IPv6Cache);
     for(let i=0;i<32;i++) {
         if(i%4==0&&i!=0) out+=":";
         out+=hexCharacters[getRandomByte()%16];
@@ -436,11 +433,13 @@ function GenerateLocalIPv4() {
 function GeneratePassword() {
     let out="";
     //Use the cache
-    if(passwordCache.length > 5 && getRandomByte() > 128) return RandomMember(passwordCache);
+    if(getRandomByte() > 128) return RandomMember(passwordCache);
     //Else generate a new password
     else {
-        out+=RandomMember(passwords);
-        out+=RandomMember(passnumbers);
+        if(randomInaccurate() > 0.3) out += RandomMember(passwords);
+        else out += GenerateRandomWord(RandomInt(5,7));
+        if(randomInaccurate() > 0.4) out += RandomMember(passnumbers);
+        else out += Math.floor(0.5 / (Math.random() + 0.05)).toString();
         //Switch characters with similar looking characters randomly
         for(let i=0;i<out.length;i++) {
             //Swap with similar characters
@@ -468,7 +467,7 @@ function GeneratePassword() {
             }
             //Switch lowercase with uppercase randomly
             let charCode=out.charCodeAt(i);
-            if(charCode>96&&charCode<123&&RandomInt(0,10)==0) {
+            if(charCode>96&&charCode<123&&randomInaccurate()>0.9) {
                 out=out.substr(0,i)+String.fromCharCode(charCode-32)+out.substr(i+1);
             }
         }
@@ -497,9 +496,7 @@ function GenerateError() {
     return out + "</span>";
 }
 function GenerateEmailAddress() {
-    if(emailCache.length > 5 && randomInaccurate() > 0.5) {
-        return RandomMember(emailCache);
-    }
+    if(randomInaccurate() > 0.5) return RandomMember(emailCache);
     else {
         let out = "";
         //40% chance for Initials
@@ -525,12 +522,22 @@ function GenerateEmailAddress() {
 }
 //#endregion
 const address="C:\\Users\\Hacker102> ";
-onload = function() {
+onload = function(event, seed) {
+    functionProbabilitySum = 0;
     for(let i = 0; i < functions.length; i++) functionProbabilitySum += functions[i].probability;
-    let seed=[];
-    for(let i=0;i<40;i++) seed[i]=Math.floor(oldRandom()*256);
+    if(typeof seed!="object") {
+        seed=[];
+        for(let i=0;i<40;i++) seed[i]=Math.floor(oldRandom()*256);
+    }
+    globalSeed = seed;
     console.log("seed: ",seed);
     seedRandom(seed);
+    for(let i = 0; i < 10; i++) {
+        IPv4Cache[i]=GenerateIPv4();
+        IPv6Cache[i]=GenerateIPv6();
+        passwordCache[i] = GeneratePassword();
+        emailCache[i] = GenerateEmailAddress();
+    }
     print(address);
     new Line().Display();
 }
@@ -539,14 +546,10 @@ onload = function() {
  * @param {string} seed Seed to start the random number generator with
  */
 function Reset(seed) {
+    if(seed == null) seed = globalSeed.slice();
     for(let id of globalTimeout) clearTimeout(id);
     document.getElementById("console").innerHTML = "";
-    IPv4Cache = [];
-    IPv6Cache = [];
-    passwordCache = [];
-    print(address);
-    seedRandom(seed);
-    new Line().Display();
+    onload(event, seed);
 }
 /**
   * Prints a string to the console
