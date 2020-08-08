@@ -89,7 +89,12 @@ var functions = [
         out += "||||Minimum: " + min + ", Maximum: " + max + ", Average: " + Math.floor(average*10)/10;
 
         return ["ping "+input,out]
-    })
+    }),
+    //sendPacket
+    new Function(10, 10, _ => {
+        let ip = randomInaccurate() > 0.2 ? (randomInaccurate() > 0.5 ? GenerateIPv4() : RandomMember(webpages)) : GenerateIPv6();
+        return ["sendPacket " + (randomInaccurate() > 0.5 ? "UDP" : "TCP") + " " + ip + " " + GenerateHexa(RandomInt(10, 40)), "||Data sent in " + RandomInt(20, 120) + " ms"];
+    }),
 ];
 //Generated onload
 var functionProbabilitySum=0;
