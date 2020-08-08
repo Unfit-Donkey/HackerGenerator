@@ -283,6 +283,8 @@ const passwords = [
     "facebook",
     "bing",
     "yahoo",
+    "mypassword",
+
 ];
 const passnumbers = [
     "1234",
@@ -306,7 +308,7 @@ const websiteExtensions = [".com", ".com", ".com", ".net", ".net", ".org", ".org
 //#endregion
 //#region Word Generation
 //Combinations of two vowels
-const wordDipthongs = ["ai", "au", "aw", "ea", "ee", "ei", "ew", "ia", "ie", "oa", "oi", "oo", "ou", "ow", "ua", "ui", "uo"];
+const wordDipthongs = ["ai", "au", "aw", "ea", "ee", "ei", "ew", "ia", "ie", "oa", "oi", "oo", "ow", "ua", "ui", "uo"];
 //Combinations of two consonants
 const wordDigraphs = ["br", "ch", "ck", "cr", "ct", "dg", "dr", "ff", "gh", "gr", "kn", "kr", "mn", "ng", "ph", "pn", "pr", "pt", "qu", "sh", "sh", "tr","th", "wh", "wr", "xi"];
 const wordVowels = ["a", "a", "e", "e", "e", "i", "i", "o", "o", "u"];
@@ -315,16 +317,33 @@ const wordConsonants = ["b", "c", "d", "d", "f", "g", "h", "h", "h", "k", "l", "
 function GenerateRandomWord(length) {
     //30% chance to start with a vowel
     let useVowel = randomInaccurate() < 0.3;
-    let out="";
+    let out = "";
     for(var i = 0; i < length; i++) {
+        let allow = true;
         //30% chance to use two characters
         if(randomInaccurate() < 0.3 && i < length - 1) {
             let letters = RandomMember(useVowel ? wordDipthongs : wordDigraphs);
-            if(i == length - 2 && letters.charAt(1) == "r") { i--; continue; }
+            //Prevent certain options when it is the last or first character
+            if(i == length - 2) {
+                if(letters.charAt(1) == "r") allow = false;
+                if(letters == "kn" || letters == "qu" || letters == "wh") allow = false;
+            }
+            if(i == 0) {
+                if(letters == "pn" || letters == "ng" || letters == "mn" || letters == "dg" || letters == "ff" || letters == "ck" || letters == "gh") allow = false;
+                if(useVowel) allow = false;
+            }
+            if(!allow) { i--; continue; }
             out += letters;
             i++;
         }
-        else out += RandomMember(useVowel ? wordVowels : wordConsonants);
+        else {
+            let char = RandomMember(useVowel ? wordVowels : wordConsonants);
+            let prevchar = out.charAt(out.length - 1);
+            if(i == length - 1 && char == "i") allow = false;
+            if(char == "h" && wordVowels.includes(prevchar)) allow = false;
+            if(!allow) { i--; continue; }
+            out += char;
+        }
         useVowel = !useVowel;
     }
     return out;
