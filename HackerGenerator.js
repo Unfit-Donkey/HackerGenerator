@@ -44,7 +44,7 @@ var functions = [
     //Crack password
     new Function(7, 60, _ => {
         let SHA = RandomMember(SHALengths);
-        return ["crackPasword SHA" + SHA.toString() + " " + GenerateHexa(SHA / 4), "Password is: ||||||||||" + GeneratePassword()];
+        return ["crackPassword SHA" + SHA.toString() + " " + GenerateHexa(SHA / 4), "Password is: ||||||||||" + GeneratePassword()];
     }),
     //Host file
     new Function(7, 40, _ => ["hostFile " + GenerateLocalIPv4() + " " + GenerateFilePath(), ""]),
@@ -540,9 +540,9 @@ function GenerateError() {
     let out = "<span style=\"color:#ff0000\">";
     if(Math.random() > 0.3) {
         let line = Math.floor((1 / Math.random()) * 100 - 100);
-        out = "Error on line " + line + ": " + RandomMember(["unknown error", "I/O error", "variable '" + RandomMember(["hello", "object", "item", "network1", "qwerty", "time", "var"]) + "' does not exist", "function '" + RandomMember(["crackSHA", "networkList", "PHP", "PM", "TypeFind", "Generate3"]) + "' does not exist", "memory overflow", "stack overflow", "network disconnected", "header file missing", "cannot divide by zero", "missing semicolon", ""]);
+        out += "Error on line " + line + ": " + RandomMember(["unknown error", "I/O error", "variable '" + RandomMember(["hello", "object", "item", "network1", "qwerty", "time", "var"]) + "' does not exist", "function '" + RandomMember(["crackSHA", "networkList", "PHP", "PM", "TypeFind", "Generate3"]) + "' does not exist", "memory overflow", "stack overflow", "network disconnected", "header file missing", "cannot divide by zero", "missing semicolon", ""]);
     }
-    else out = "Error: file does not exist";
+    else out += "Error: file does not exist";
     return out + "</span>";
 }
 function GenerateEmailAddress(useCache=true) {
