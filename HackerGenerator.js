@@ -598,9 +598,16 @@ function GenerateEmailAddress(useCache=true) {
 var address="C:\\Users\\Hacker102> ";
 var shellType="batch";
 onload = function(event, seed) {
-    let tags=location.href.substring(document.URL.indexOf("?")+1).split("&");
-    console.log(tags);
-    if(tags[0]=="shell=bash") {address="[hackersLaptop ~/code]# ";shellType="bash";}
+    //Parse URL tags
+    let tagText=location.href.substring(document.URL.indexOf("?")+1).split("&");
+    let tags={};
+    for(let i=0;i<tagText.length;i++) {
+        let equalPos=tagText[i].indexOf("=");
+        tags[tagText[i].substring(0,equalPos)]=tagText[i].substring(equalPos+1);
+    }
+    console.log("tags",tags);
+    if(tags["shell"]=="bash") {address="[hackersLaptop ~/code]# ";shellType="bash";}
+    if(tags["speed"]) displaySpeed=Number(tags["speed"]);
     functionProbabilitySum = 0;
     for(let i = 0; i < functions.length; i++) functionProbabilitySum += functions[i].probability;
     if(typeof seed != "object" && typeof seed != "string") {
