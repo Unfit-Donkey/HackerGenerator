@@ -1,7 +1,7 @@
 body {
     background:#000000;
     color:#00FF00;
-    font-family:consolas, courier, monospace;
+    font-family: "Roboto Mono", monospace, courier;
     overflow:hidden;
     margin:0px;
     width:100vw;
@@ -26,7 +26,7 @@ body {
     box-sizing:border-box;
     position:relative;
     top:2px;
-    border-bottom:#ffffff solid 4px;
+    border-bottom:#ffffff solid 0.9em;
     animation: blinker 1s step-start infinite;
     opacity:1;
 }
