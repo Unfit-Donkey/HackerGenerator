@@ -318,7 +318,26 @@ const filePaths = [
     "C:/Windows/Temp",
     "C:/Windows/System",
 ];
-const fileExtensions = [".exe",".exe",".exe",".exe",".exe",".dll",".jar",".app",".js",".rar",".xml",".bat",".bat",".bin",".bin",".py",".cpp",".php",".sh",".sh",".sys",".sys",".txt"];
+const filePathsBash = [
+    "/usr/bin",
+    "/usr/lib",
+    "/usr/sbin",
+    "/usr/local/lib",
+    "/root/code",
+    "/root/Documents",
+    "/home/hacker",
+    "/home/hacker/Pictures/Nothing/In/This/Folder",
+    "/home/hacker/Music/NotHacking",
+    "/home/hacker/.local/bin",
+    "/home/hacker/Documents/code",
+    "/home/hacker/Desktop",
+    "/etc",
+    "/tmp",
+    "/var",
+    "/mnt/drive",
+    "/opt",
+];
+const fileExtensions = [".exe",".exe",".exe",".exe",".exe",".dll",".jar",".app",".js",".rar",".xml",".bat",".bat",".bin",".bin",".py",".cpp",".php",".sh",".sh",".sys",".sys",".txt",".conf"];
 const webpages = ["google.com","facebook.com","youtube.com","yahoo.com","apple.com","amazon.com","amazon.com","twitter.com","live.com","instagram.com","reddit.com","netflix.com","linkedin.com","twitch.tv","microsoft.com","ebay.com","google.co.uk","quora.com","bing.com"];
 const passwords = [
     "password",
@@ -531,7 +550,12 @@ function GeneratePassword(useCache=true) {
   * @return {string} File path
   */
 function GenerateFilePath() {
-    return RandomMember(filePaths)+RandomMember(fileNames)+RandomMember(fileExtensions);
+    let out="";
+    if(shellType=="bash") out+=RandomMember(filePathsBash);
+    else out+=RandomMember(filePaths);
+    if(randomInaccurate()>200) out+="/"+GenerateRandomWord(RandomInt(5,7));
+
+    return out+RandomMember(fileNames)+RandomMember(fileExtensions);
 }
 /**
  * Generates an error
@@ -571,8 +595,12 @@ function GenerateEmailAddress(useCache=true) {
     }
 }
 //#endregion
-const address="C:\\Users\\Hacker102> ";
+var address="C:\\Users\\Hacker102> ";
+var shellType="batch";
 onload = function(event, seed) {
+    let tags=location.href.substring(document.URL.indexOf("?")+1).split("&");
+    console.log(tags);
+    if(tags[0]=="shell=bash") {address="[hackersLaptop ~/code]# ";shellType="bash";}
     functionProbabilitySum = 0;
     for(let i = 0; i < functions.length; i++) functionProbabilitySum += functions[i].probability;
     if(typeof seed != "object" && typeof seed != "string") {
