@@ -21,17 +21,13 @@ body {
 #console::after {
     content:"";
     display:inline-block;
-    width:0.9ch;
-    height:0.9em;
+    width:1ch;
+    height:1.05em;
     box-sizing:border-box;
     position:relative;
-    top:2px;
-    border-bottom:#ffffff solid 0.9em;
+    top:4px;
+    left:1px;
+    background:#ffffff;
     animation: blinker 1s step-start infinite;
     opacity:1;
-}
-@keyframes blinker {
-    50% {
-        opacity:0;
-    }
 }
