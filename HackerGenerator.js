@@ -606,22 +606,27 @@ onload = function(event, seed) {
         tags[tagText[i].substring(0,equalPos)]=tagText[i].substring(equalPos+1);
     }
     console.log("tags",tags);
-    if(tags["shell"]=="bash") {address="[hackersLaptop ~/code]# ";shellType="bash";}
+    if(tags["shell"]=="bash") {address="[hackersLaptop ~]# ";shellType="bash";}
     if(tags["speed"]) displaySpeed=Number(tags["speed"]);
+    if(tags["seed"]) seed=tags["seed"];
+    //Calculate function probability sum
     functionProbabilitySum = 0;
     for(let i = 0; i < functions.length; i++) functionProbabilitySum += functions[i].probability;
+    //Read seed
     if(typeof seed != "object" && typeof seed != "string") {
         seed=[];
         for(let i = 0; i < 40; i++) seed[i] = Math.floor(oldRandom() * 256);
     }
     seedRandom(seed);
     console.log("seed: ",seedToString(globalSeed));
+    //Generate ip and password history
     for(let i = 0; i < 10; i++) {
         GenerateIPv4(false);
         GenerateIPv6(false);
         GeneratePassword(false);
         GenerateEmailAddress(false);
     }
+    //Start
     print(address);
     new Line().Display();
 }
