@@ -2,6 +2,7 @@ body {
     background:#000000;
     color:#00FF00;
     font-family: "Roboto Mono", monospace, courier;
+    line-height: 1.2em;
     overflow:hidden;
     margin:0px;
     width:100vw;
@@ -23,11 +24,7 @@ body {
     display:inline-block;
     width:1ch;
     height:1.05em;
-    box-sizing:border-box;
     position:relative;
-    top:4px;
-    left:1px;
+    top:0.2em;
     background:#ffffff;
-    animation: blinker 1s step-start infinite;
-    opacity:1;
 }
